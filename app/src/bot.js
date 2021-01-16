@@ -16,25 +16,36 @@ exports.Bot = void 0;
 const discord_js_1 = require("discord.js");
 const inversify_1 = require("inversify");
 const types_1 = require("./types");
+const message_handler_1 = require("./messages/message-handler");
 let Bot = class Bot {
-    constructor(client, token) {
+    constructor(client, token, messageHandler) {
         this.client = client;
         this.token = token;
+        this.messageHandler = messageHandler;
     }
     listen() {
-        this.client.on('message', (message) => {
-            console.log('Message received! Contents: ' + message.content);
-            console.log('Entire message:');
-            console.log(message);
-        });
+        this.client.on('message', (message) => this.handleMessage(message));
         return this.client.login(this.token);
+    }
+    handleMessage(message) {
+        if (message.author.bot) {
+            console.log('Ignoring bot messages...');
+            return;
+        }
+        console.log('Message received! Contents: ' + message.content);
+        this.messageHandler.handle(message).then(() => {
+            console.log('Response sent');
+        }).catch(() => {
+            console.log('Did not match');
+        });
     }
 };
 Bot = __decorate([
     inversify_1.injectable(),
     __param(0, inversify_1.inject(types_1.TYPES.Client)),
     __param(1, inversify_1.inject(types_1.TYPES.Token)),
-    __metadata("design:paramtypes", [discord_js_1.Client, String])
+    __param(2, inversify_1.inject(types_1.TYPES.MessageHandler)),
+    __metadata("design:paramtypes", [discord_js_1.Client, String, message_handler_1.MessageHandler])
 ], Bot);
 exports.Bot = Bot;
 //# sourceMappingURL=bot.js.map
