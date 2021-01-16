@@ -4,7 +4,8 @@
   "description": "A discord bot to store your funniest quotes in.",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "build": "tsc -p tsconfig.json",
+    "start": "node build/index.js",
     "watch": "tsc -p tsconfig.json -w",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
