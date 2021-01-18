@@ -2,22 +2,23 @@ import {Client, Message} from "discord.js";
 import {inject, injectable} from "inversify";
 import {TYPES} from "./types";
 import {MessageHandler} from "./messages/message-handler";
+import {CompoundMessageHandler} from "./messages/compound-message-handler";
 
 @injectable()
 export class Bot {
 
   private client: Client;
-  private messageHandler: MessageHandler;
+  private messageHandlers: CompoundMessageHandler;
   private readonly token: string;
 
   constructor(
     @inject(TYPES.Client) client: Client,
     @inject(TYPES.Token) token: string,
-    @inject(TYPES.MessageHandler) messageHandler: MessageHandler
+    @inject(TYPES.MessageHandlers) messageHandlers: CompoundMessageHandler
   ) {
     this.client = client;
     this.token = token;
-    this.messageHandler = messageHandler;
+    this.messageHandlers = messageHandlers;
   }
 
   public listen(): Promise<string> {
@@ -33,11 +34,11 @@ export class Bot {
     }
 
     console.log('Message received! Contents: ' + message.content);
-
-    this.messageHandler.handle(message).then(() => {
-      console.log('Response sent');
+    
+    this.messageHandlers.handleMessage(message).then(() => {
+      console.log('Handled!');
     }).catch(() => {
-      console.log('Did not match');
+      console.log('Not handled :(');
     });
   }
 }

@@ -1,6 +1,6 @@
 export const TYPES = {
   Bot: Symbol("Bot"),
   Client: Symbol("Client"),
-  MessageHandler: Symbol("MessageHandler"),
+  MessageHandlers: Symbol("MessageHandlers"),
   Token: Symbol("Token"),
 };

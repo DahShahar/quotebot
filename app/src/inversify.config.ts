@@ -3,6 +3,9 @@ import {Container} from "inversify";
 import {TYPES} from "./types";
 import {Bot} from "./bot";
 import {MessageHandler} from "./messages/message-handler";
+import {EchoHandler} from "./messages/echo-handler";
+import {CompoundMessageHandler} from "./messages/compound-message-handler";
+import {QuoteBoteMessageHandler} from "./messages/quote-bot-message-handler";
 import {Client} from "discord.js";
 
 let container = new Container();
@@ -11,6 +14,10 @@ container.bind<Bot>(TYPES.Bot).to(Bot).inSingletonScope();
 container.bind<Client>(TYPES.Client).toConstantValue(new Client());
 container.bind<string>(TYPES.Token).toConstantValue(process.env.TOKEN);
 
-container.bind<MessageHandler>(TYPES.MessageHandler).to(MessageHandler).inSingletonScope();
+const messageHandlers: Array<MessageHandler> = [
+  new EchoHandler(),
+];
+
+container.bind<CompoundMessageHandler>(TYPES.MessageHandlers).toConstantValue(new QuoteBoteMessageHandler(messageHandlers));
 
 export default container;
