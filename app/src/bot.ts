@@ -10,15 +10,18 @@ export class Bot {
   private client: Client;
   private messageHandlers: CompoundMessageHandler;
   private readonly token: string;
+  private readonly qualifier: string;
 
   constructor(
     @inject(TYPES.Client) client: Client,
     @inject(TYPES.Token) token: string,
-    @inject(TYPES.MessageHandlers) messageHandlers: CompoundMessageHandler
+    @inject(TYPES.MessageHandler) messageHandlers: CompoundMessageHandler,
+    @inject(TYPES.Qualifier) qualifier: string
   ) {
     this.client = client;
     this.token = token;
     this.messageHandlers = messageHandlers;
+    this.qualifier = qualifier;
   }
 
   public listen(): Promise<string> {
@@ -34,7 +37,7 @@ export class Bot {
     }
 
     console.log('Message received! Contents: ' + message.content);
-    
+
     this.messageHandlers.handleMessage(message).then(() => {
       console.log('Handled!');
     }).catch(() => {

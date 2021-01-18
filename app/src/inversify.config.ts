@@ -13,11 +13,14 @@ let container = new Container();
 container.bind<Bot>(TYPES.Bot).to(Bot).inSingletonScope();
 container.bind<Client>(TYPES.Client).toConstantValue(new Client());
 container.bind<string>(TYPES.Token).toConstantValue(process.env.TOKEN);
+container.bind<string>(TYPES.Qualifier).toConstantValue(process.env.QUALIFIER);
 
-const messageHandlers: Array<MessageHandler> = [
+const messageHandlers: MessageHandler[] = [
   new EchoHandler(),
 ];
 
-container.bind<CompoundMessageHandler>(TYPES.MessageHandlers).toConstantValue(new QuoteBoteMessageHandler(messageHandlers));
+container.bind<MessageHandler[]>(TYPES.MessageHandlers).toConstantValue(messageHandlers);
+
+container.bind<CompoundMessageHandler>(TYPES.MessageHandler).to(QuoteBoteMessageHandler).inSingletonScope();
 
 export default container;
