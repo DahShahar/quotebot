@@ -5,7 +5,7 @@ import {injectable, inject} from "inversify";
 import {TYPES} from "../types";
 
 @injectable()
-export class QuoteBoteMessageHandler implements CompoundMessageHandler {
+export class QuoteBotMessageHandler implements CompoundMessageHandler {
   private messageHandlers: MessageHandler[];
   private qualifier: string;
 
@@ -18,8 +18,6 @@ export class QuoteBoteMessageHandler implements CompoundMessageHandler {
   }
 
   handleMessage(message: Message): Promise<Message | Message[]> {
-    console.log(this.qualifier);
-    console.log(message.content);
     if (!message.content.startsWith(this.qualifier)) {
       return Promise.reject();
     }
@@ -29,6 +27,7 @@ export class QuoteBoteMessageHandler implements CompoundMessageHandler {
         return handler.handle(message);
       }
     }
+
     return Promise.reject();
   }
 }

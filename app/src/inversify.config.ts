@@ -5,7 +5,7 @@ import {Bot} from "./bot";
 import {MessageHandler} from "./messages/message-handler";
 import {EchoHandler} from "./messages/echo-handler";
 import {CompoundMessageHandler} from "./messages/compound-message-handler";
-import {QuoteBoteMessageHandler} from "./messages/quote-bot-message-handler";
+import {QuoteBotMessageHandler} from "./messages/quote-bot-message-handler";
 import {Client} from "discord.js";
 
 let container = new Container();
@@ -21,6 +21,6 @@ const messageHandlers: MessageHandler[] = [
 
 container.bind<MessageHandler[]>(TYPES.MessageHandlers).toConstantValue(messageHandlers);
 
-container.bind<CompoundMessageHandler>(TYPES.MessageHandler).to(QuoteBoteMessageHandler).inSingletonScope();
+container.bind<CompoundMessageHandler>(TYPES.MessageHandler).to(QuoteBotMessageHandler).inSingletonScope();
 
 export default container;

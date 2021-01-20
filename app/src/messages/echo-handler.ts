@@ -8,7 +8,7 @@ export class EchoHandler implements MessageHandler {
   constructor() {}
 
   identify(message: Message): boolean {
-    return true;
+    return message.content.startsWith('!echo');
   }
 
   handle(message: Message): Promise<Message | Message[]> {
