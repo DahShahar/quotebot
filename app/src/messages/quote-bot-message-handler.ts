@@ -18,7 +18,7 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
   }
 
   handleMessage(message: Message): Promise<Message | Message[]> {
-    if (!message.content.startsWith(this.qualifier)) {
+    if (this.shouldIgnoreMessage(message)) {
       return Promise.reject();
     }
 
@@ -29,5 +29,14 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
     }
 
     return Promise.reject();
+  }
+
+  shouldIgnoreMessage(message: Message): boolean {
+    if (!message.content.startsWith(this.qualifier)) {
+      return true;
+    } else if (message.author.bot) {
+      return true;
+    }
+    return false;
   }
 }

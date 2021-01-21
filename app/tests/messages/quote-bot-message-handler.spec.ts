@@ -5,13 +5,15 @@ import {EchoHandler} from "../../src/messages/echo-handler";
 import {CompoundMessageHandler} from "../../src/messages/compound-message-handler";
 import {QuoteBotMessageHandler} from "../../src/messages/quote-bot-message-handler";
 import {instance, mock, verify, when} from "ts-mockito";
-import {Message} from "discord.js";
+import {Message, User} from "discord.js";
 
 describe('QuoteBotMessageHandler', () => {
   let mockedEchoHandlerClass: EchoHandler;
   let mockedEchoHandlerInstance: EchoHandler;
   let mockedMessageClass: Message;
   let mockedMessageInstance: Message;
+  let mockedUserClass: User;
+  let mockedUser: User;
 
   let service: QuoteBotMessageHandler;
   let qualifier: string;
@@ -19,7 +21,12 @@ describe('QuoteBotMessageHandler', () => {
   beforeEach(() => {
     mockedEchoHandlerClass = mock(EchoHandler);
     mockedEchoHandlerInstance = instance(mockedEchoHandlerClass);
+
     mockedMessageClass = mock(Message);
+    mockedUserClass = mock(User);
+    mockedUser = instance(mockedUserClass);
+    when(mockedMessageClass.author).thenReturn(mockedUser);
+
     mockedMessageInstance = instance(mockedMessageClass);
     qualifier = '!'
     setMessageContents();
@@ -27,7 +34,22 @@ describe('QuoteBotMessageHandler', () => {
     service = new QuoteBotMessageHandler([mockedEchoHandlerInstance], qualifier);
   })
 
-  it('should reply', async () => {
+  it('should handle this message', () => {
+    expect(service.shouldIgnoreMessage(mockedMessageInstance)).to.be.false;
+  })
+
+  it('should not handle this message', () => {
+    mockedMessageInstance.content = "THIS IS BAD";
+
+    expect(service.shouldIgnoreMessage(mockedMessageInstance)).to.be.true;
+  });
+
+  it('should not handle bot messages', () => {
+    mockedUser.bot = true;
+    expect(service.shouldIgnoreMessage(mockedMessageInstance)).to.be.true;
+  });
+
+  it('should pass it to the handler', async () => {
     whenIsActionableThenReturn(true);
 
     await service.handleMessage(mockedMessageInstance);
@@ -35,7 +57,7 @@ describe('QuoteBotMessageHandler', () => {
     verify(mockedEchoHandlerClass.handle(mockedMessageInstance)).once();
   })
 
-  it('should not reply', async () => {
+  it('should not pass it on', async () => {
     whenIsActionableThenReturn(false);
 
     await service.handleMessage(mockedMessageInstance).then(() => {
@@ -49,6 +71,7 @@ describe('QuoteBotMessageHandler', () => {
   })
 
   function setMessageContents() {
+    mockedUser.bot = false;
     mockedMessageInstance.content = qualifier + "echo Non-empty string";
   }
 

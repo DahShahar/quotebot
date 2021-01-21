@@ -31,13 +31,6 @@ export class Bot {
   }
 
   private handleMessage(message: Message): void {
-    if (message.author.bot) {
-      console.log('Ignoring bot messages...');
-      return;
-    }
-
-    console.log('Message received! Contents: ' + message.content);
-
     this.messageHandlers.handleMessage(message).then(() => {
       console.log('Handled!');
     }).catch(() => {
