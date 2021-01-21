@@ -1,12 +1,12 @@
-import "reflect-metadata";
-import {Container} from "inversify";
-import {TYPES} from "./types";
-import {Bot} from "./bot";
-import {MessageHandler} from "./messages/message-handler";
-import {EchoHandler} from "./messages/echo-handler";
-import {CompoundMessageHandler} from "./messages/compound-message-handler";
-import {QuoteBotMessageHandler} from "./messages/quote-bot-message-handler";
-import {Client} from "discord.js";
+import 'reflect-metadata';
+import {Container} from 'inversify';
+import {TYPES} from './types';
+import {Bot} from './bot';
+import {MessageHandler} from './messages/message-handler';
+import {EchoHandler} from './messages/echo-handler';
+import {CompoundMessageHandler} from './messages/compound-message-handler';
+import {QuoteBotMessageHandler} from './messages/quote-bot-message-handler';
+import {Client} from 'discord.js';
 
 let container = new Container();
 

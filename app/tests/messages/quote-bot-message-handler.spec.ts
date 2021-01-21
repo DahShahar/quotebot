@@ -1,11 +1,11 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 import 'mocha';
 import {expect} from 'chai';
-import {EchoHandler} from "../../src/messages/echo-handler";
-import {CompoundMessageHandler} from "../../src/messages/compound-message-handler";
-import {QuoteBotMessageHandler} from "../../src/messages/quote-bot-message-handler";
-import {instance, mock, verify, when} from "ts-mockito";
-import {Message, User} from "discord.js";
+import {EchoHandler} from '../../src/messages/echo-handler';
+import {CompoundMessageHandler} from '../../src/messages/compound-message-handler';
+import {QuoteBotMessageHandler} from '../../src/messages/quote-bot-message-handler';
+import {instance, mock, verify, when} from 'ts-mockito';
+import {Message, User} from 'discord.js';
 
 describe('QuoteBotMessageHandler', () => {
   let mockedEchoHandlerClass: EchoHandler;
@@ -39,7 +39,7 @@ describe('QuoteBotMessageHandler', () => {
   })
 
   it('should not handle this message', () => {
-    mockedMessageInstance.content = "THIS IS BAD";
+    mockedMessageInstance.content = 'THIS IS BAD';
 
     expect(service.shouldIgnoreMessage(mockedMessageInstance)).to.be.true;
   });
@@ -72,7 +72,7 @@ describe('QuoteBotMessageHandler', () => {
 
   function setMessageContents() {
     mockedUser.bot = false;
-    mockedMessageInstance.content = qualifier + "echo Non-empty string";
+    mockedMessageInstance.content = qualifier + 'echo Non-empty string';
   }
 
   function whenIsActionableThenReturn(result: boolean) {

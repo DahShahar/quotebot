@@ -1,6 +1,6 @@
-import {Message} from "discord.js";
-import {MessageHandler} from "./message-handler";
-import {injectable} from "inversify";
+import {Message} from 'discord.js';
+import {MessageHandler} from './message-handler';
+import {injectable} from 'inversify';
 
 @injectable()
 export class EchoHandler implements MessageHandler {
