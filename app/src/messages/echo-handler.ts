@@ -5,8 +5,6 @@ import {injectable} from 'inversify';
 @injectable()
 export class EchoHandler implements MessageHandler {
 
-  constructor() {}
-
   identify(message: Message): boolean {
     return message.content.startsWith('!echo');
   }
