@@ -4,6 +4,7 @@ import {TYPES} from './types';
 import {Bot} from './bot';
 import {MessageHandler} from './messages/message-handler';
 import {EchoHandler} from './messages/echo-handler';
+import {AddQuoteHandler} from './messages/add-quote-handler';
 import {CompoundMessageHandler} from './messages/compound-message-handler';
 import {QuoteBotMessageHandler} from './messages/quote-bot-message-handler';
 import {Client} from 'discord.js';
@@ -24,6 +25,7 @@ container.bind<string>(TYPES.Qualifier).toConstantValue(stringOrThrow(process.en
 
 const messageHandlers: MessageHandler[] = [
   new EchoHandler(),
+  new AddQuoteHandler(),
 ];
 
 container.bind<MessageHandler[]>(TYPES.MessageHandlers).toConstantValue(messageHandlers);

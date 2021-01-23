@@ -3,18 +3,21 @@ import {MessageHandler} from './message-handler';
 import {injectable} from 'inversify';
 
 @injectable()
-export class EchoHandler implements MessageHandler {
+export class AddQuoteHandler implements MessageHandler {
+
+  private quotes: string[] = [];
 
   getIdentifier() {
-    return 'echo';
+    return 'addquote';
   }
 
   identify(message: Message): boolean {
     return message.content.startsWith(this.getIdentifier());
   }
 
-  handle(message: Message): Promise<Message | Message[]> {
-    return message.reply(message.content);
+  handle(message: Message)  {
+    this.quotes.push(message.content);
+    console.log(this.quotes);
+    return message.reply('Added Quote!');
   }
-
 }
