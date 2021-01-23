@@ -22,8 +22,13 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
       return Promise.reject();
     }
 
+    // as part of checking if we should ignore this message,
+    // we verified it started with the qualifier
+    message.content = message.content.substring(this.qualifier.length);
+
     for (let handler of this.messageHandlers) {
       if (handler.identify(message)) {
+        message.content = message.content.substring(handler.getIdentifier().length);
         return handler.handle(message);
       }
     }

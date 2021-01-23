@@ -6,7 +6,7 @@ import {instance, mock, verify, when} from 'ts-mockito';
 import {Message} from 'discord.js';
 
 describe('EchoHandler', () => {
-  let content: string = "!echo message";
+  let content: string = "echo message";
 
   let mockedMessageClass: Message;
   let mockedMessageInstance: Message;

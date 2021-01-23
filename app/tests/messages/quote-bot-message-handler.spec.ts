@@ -20,6 +20,7 @@ describe('QuoteBotMessageHandler', () => {
 
   beforeEach(() => {
     mockedEchoHandlerClass = mock(EchoHandler);
+    when(mockedEchoHandlerClass.getIdentifier()).thenReturn('echo');
     mockedEchoHandlerInstance = instance(mockedEchoHandlerClass);
 
     mockedMessageClass = mock(Message);
