@@ -4,5 +4,6 @@ export const TYPES = {
   MessageHandlers: Symbol('MessageHandlers'),
   MessageHandler: Symbol('MessageHandler'),
   Qualifier: Symbol('Qualifier'),
+  QuoteManager: Symbol('QuoteManager'),
   Token: Symbol('Token'),
 };

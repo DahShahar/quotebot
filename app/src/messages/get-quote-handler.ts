@@ -5,7 +5,7 @@ import {injectable, inject} from 'inversify';
 import {TYPES} from '../types';
 
 @injectable()
-export class AddQuoteHandler implements MessageHandler {
+export class GetQuoteHandler implements MessageHandler {
 
   private quoteManager: QuoteManager;
 
@@ -16,7 +16,7 @@ export class AddQuoteHandler implements MessageHandler {
   }
 
   getIdentifier() {
-    return 'addquote';
+    return 'quote';
   }
 
   identify(message: Message): boolean {
@@ -24,7 +24,7 @@ export class AddQuoteHandler implements MessageHandler {
   }
 
   handle(message: Message)  {
-    this.quoteManager.add(message.content);
-    return message.reply('Added Quote!');
+    console.log(this.quoteManager);
+    return message.reply(this.quoteManager.get());
   }
 }
