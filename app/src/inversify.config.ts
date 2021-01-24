@@ -16,7 +16,7 @@ function stringOrThrow(check: string | undefined) : string {
   if (check !== null && check !== undefined) {
     return check;
   }
-  throw `Expected ${check} to be a string, was not`
+  throw new Error('Expected to find a string, was not');
 }
 
 const container = new Container();

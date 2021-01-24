@@ -2,7 +2,6 @@ import 'reflect-metadata';
 import 'mocha';
 import {expect} from 'chai';
 import {EchoHandler} from '../../src/messages/echo-handler';
-import {CompoundMessageHandler} from '../../src/messages/compound-message-handler';
 import {QuoteBotMessageHandler} from '../../src/messages/quote-bot-message-handler';
 import {instance, mock, verify, when} from 'ts-mockito';
 import {Message, User} from 'discord.js';

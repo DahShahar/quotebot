@@ -15,7 +15,7 @@ export class AddQuoteHandler implements MessageHandler {
     this.quoteManager = quoteManager;
   }
 
-  getIdentifier() {
+  getIdentifier(): string {
     return 'addquote';
   }
 
@@ -23,7 +23,7 @@ export class AddQuoteHandler implements MessageHandler {
     return message.content.startsWith(this.getIdentifier());
   }
 
-  handle(message: Message)  {
+  handle(message: Message): Promise<Message | Message[]>  {
     this.quoteManager.add(message.content);
     return message.reply('Added Quote!');
   }

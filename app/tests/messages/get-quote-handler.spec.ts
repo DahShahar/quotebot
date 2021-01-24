@@ -3,11 +3,10 @@ import 'mocha'
 import {Message} from 'discord.js';
 import {QuoteManager} from '../../src/quotes/quote-manager';
 import {GetQuoteHandler} from '../../src/messages/get-quote-handler';
-import {expect} from 'chai';
-import {instance, mock, verify, when} from 'ts-mockito';
+import {instance, mock, verify} from 'ts-mockito';
 
 describe('GetQuoteHandler', () => {
-  let content: string = "test echo";
+  const content = "test echo";
 
   let mockedQuoteManagerClass: QuoteManager;
   let mockedQuoteManagerInstance: QuoteManager;

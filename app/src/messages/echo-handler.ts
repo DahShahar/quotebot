@@ -5,7 +5,7 @@ import {injectable} from 'inversify';
 @injectable()
 export class EchoHandler implements MessageHandler {
 
-  getIdentifier() {
+  getIdentifier(): string {
     return 'echo';
   }
 

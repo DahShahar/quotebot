@@ -6,11 +6,11 @@ export class InMemoryQuoteManager implements QuoteManager {
 
   private quotes:string[] = [];
 
-  get() {
+  get(): string {
     return this.quotes[Math.floor(Math.random() * this.quotes.length)];
   }
 
-  add(quote: string) {
+  add(quote: string): boolean {
     this.quotes.push(quote);
     return true;
   }

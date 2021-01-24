@@ -2,11 +2,11 @@ import 'reflect-metadata';
 import 'mocha';
 import {expect} from 'chai';
 import {EchoHandler} from '../../src/messages/echo-handler';
-import {instance, mock, verify, when} from 'ts-mockito';
+import {instance, mock, verify} from 'ts-mockito';
 import {Message} from 'discord.js';
 
 describe('EchoHandler', () => {
-  let content: string = "echo message";
+  const content = "echo message";
 
   let mockedMessageClass: Message;
   let mockedMessageInstance: Message;
