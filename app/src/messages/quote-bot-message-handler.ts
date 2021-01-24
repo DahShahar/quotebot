@@ -26,7 +26,7 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
     // we verified it started with the qualifier
     message.content = message.content.substring(this.qualifier.length);
 
-    for (let handler of this.messageHandlers) {
+    for (const handler of this.messageHandlers) {
       if (handler.identify(message)) {
         message.content = message.content.substring(handler.getIdentifier().length).trim();
         return handler.handle(message);

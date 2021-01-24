@@ -19,7 +19,7 @@ function stringOrThrow(check: string | undefined) : string {
   throw `Expected ${check} to be a string, was not`
 }
 
-let container = new Container();
+const container = new Container();
 
 container.bind<Bot>(TYPES.Bot).to(Bot).inSingletonScope();
 container.bind<Client>(TYPES.Client).toConstantValue(new Client());
