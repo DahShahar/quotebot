@@ -24,7 +24,6 @@ export class GetQuoteHandler implements MessageHandler {
   }
 
   handle(message: Message): Promise<Message | Message[]>  {
-    console.log(this.quoteManager);
     return message.reply(this.quoteManager.get());
   }
 }

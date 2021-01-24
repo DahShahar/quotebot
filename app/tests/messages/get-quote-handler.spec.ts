@@ -3,11 +3,10 @@ import 'mocha'
 import {Message} from 'discord.js';
 import {QuoteManager} from '../../src/quotes/quote-manager';
 import {GetQuoteHandler} from '../../src/messages/get-quote-handler';
-import {instance, mock, verify} from 'ts-mockito';
+import {instance, mock, verify, when} from 'ts-mockito';
 
 describe('GetQuoteHandler', () => {
-  const content = "test echo";
-
+  const quote = 'hello world';
   let mockedQuoteManagerClass: QuoteManager;
   let mockedQuoteManagerInstance: QuoteManager;
 
@@ -19,17 +18,24 @@ describe('GetQuoteHandler', () => {
   beforeEach(() => {
     mockedMessageClass = mock(Message);
     mockedMessageInstance = instance(mockedMessageClass);
-    mockedMessageInstance.content = content;
 
     mockedQuoteManagerClass = mock<QuoteManager>();
     mockedQuoteManagerInstance = instance(mockedQuoteManagerClass);
+    when(mockedQuoteManagerClass.get()).thenReturn(quote);
 
     getQuoteHandler = new GetQuoteHandler(mockedQuoteManagerInstance);
   });
 
-  it('calls get on the quote manager ', async () => {
+  it('calls get on the quote manager', async () => {
     await getQuoteHandler.handle(mockedMessageInstance);
 
     verify(mockedQuoteManagerClass.get()).once();
+    verify(mockedMessageClass.reply(quote)).once();
+  });
+
+  it('responds with what it gets from the quote manager', async () => {
+    await getQuoteHandler.handle(mockedMessageInstance);
+
+    verify(mockedMessageClass.reply(quote)).once();
   });
 });
