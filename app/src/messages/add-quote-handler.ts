@@ -1,6 +1,7 @@
 import {Message} from 'discord.js';
 import {MessageHandler} from './message-handler';
 import {QuoteManager} from '../quotes/quote-manager';
+import {QuoteBuilder} from '../quotes/quote-builder';
 import {injectable, inject} from 'inversify';
 import {TYPES} from '../types';
 
@@ -24,7 +25,13 @@ export class AddQuoteHandler implements MessageHandler {
   }
 
   handle(message: Message): Promise<Message | Message[]>  {
-    this.quoteManager.add(message.content);
+    const quote = new QuoteBuilder()
+      .withQuote(message.content)
+      .withBlamer(message.author.username)
+      .withAuthor(message.author.username)
+      .build();
+
+    this.quoteManager.add(quote);
     return message.reply('Added Quote!');
   }
 }
