@@ -28,7 +28,6 @@ export class Bot {
   }
 
   private handleMessage(message: Message): void {
-    console.log(message.content);
     this.messageHandlers.handleMessage(message).then(() => {
       console.log('Handled!');
     }).catch(() => {

@@ -25,13 +25,24 @@ export class AddQuoteHandler implements MessageHandler {
   }
 
   handle(message: Message): Promise<Message | Message[]>  {
-    const quote = new QuoteBuilder()
-      .withQuote(message.content)
-      .withBlamer(message.author.username)
-      .withAuthor(message.author.username)
-      .build();
+    const origContent = message.content;
+    return message.channel.messages.fetch().then(fetchedMessages => {
+      const originalMessage: Message | undefined = fetchedMessages.find(m => {
+        return m.id !== message.id && m.content === origContent;
+      });
 
-    this.quoteManager.add(quote);
-    return message.reply('Added Quote!');
+      if (originalMessage === undefined) {
+        return message.channel.send('Couldn\'t find who you\'re trying to quote :(');
+      }
+
+      const quote = new QuoteBuilder()
+        .withQuote(message.content)
+        .withBlamer(message.author.username)
+        .withAuthor(originalMessage.author.username)
+        .build();
+
+      this.quoteManager.add(quote);
+      return message.channel.send(`Added quote! Original by: ${quote.author}, added by: ${quote.blamer}`);
+    });
   }
 }
