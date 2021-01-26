@@ -7,23 +7,24 @@ import {expect} from 'chai';
 import {anything, capture, instance, mock, verify, when} from 'ts-mockito';
 
 describe('AddQuoteHandler', () => {
-  const firstUsername = 'shahar';
-  const secondUsername = 'dahan';
+  const authorUsername = 'shahar';
+  const blamerUsername = 'dahan';
   const content = 'test echo';
 
   let mockedQuoteManagerClass: QuoteManager;
   let mockedQuoteManagerInstance: QuoteManager;
 
-  let firstMockedMessageClass: Message;
-  let secondMockedMessageClass: Message;
-  let mockedMessageInstance: Message;
-  let firstMockedMessageInstance: Message;
+  let originalMockedMessageClass: Message;
+  let originalMockedMessageInstance: Message;
 
-  let firstMockedUserClass: User;
-  let firstMockedUser: User;
+  let addQuoteMockedMessageClass: Message;
+  let addQuoteMockedMessageInstance: Message;
 
-  let secondMockedUserClass: User;
-  let secondMockedUser: User;
+  let authorMockedUserClass: User;
+  let authorMockedUser: User;
+
+  let blamerMockedUserClass: User;
+  let blamerMockedUser: User;
 
   let mockedChannelClass: TextChannel;
   let mockedChannelInstance: TextChannel;
@@ -34,44 +35,43 @@ describe('AddQuoteHandler', () => {
   let addQuoteHandler: AddQuoteHandler;
 
   beforeEach(() => {
-    firstMockedMessageClass = mock(Message);
-    secondMockedMessageClass = mock(Message);
+    originalMockedMessageClass = mock(Message);
+    addQuoteMockedMessageClass = mock(Message);
 
-    firstMockedUserClass = mock(User);
-    firstMockedUser = instance(firstMockedUserClass);
-    when(firstMockedMessageClass.author).thenReturn(firstMockedUser);
-    firstMockedUser.username = firstUsername;
+    authorMockedUserClass = mock(User);
+    authorMockedUser = instance(authorMockedUserClass);
+    when(originalMockedMessageClass.author).thenReturn(authorMockedUser);
+    authorMockedUser.username = authorUsername;
 
-    secondMockedUserClass = mock(User);
-    secondMockedUser = instance(secondMockedUserClass);
-    when(secondMockedMessageClass.author).thenReturn(secondMockedUser);
-    secondMockedUser.username = secondUsername;
+    blamerMockedUserClass = mock(User);
+    blamerMockedUser = instance(blamerMockedUserClass);
+    when(addQuoteMockedMessageClass.author).thenReturn(blamerMockedUser);
+    blamerMockedUser.username = blamerUsername;
 
     mockedChannelClass = mock(TextChannel);
 
     mockedMessageManagerClass = mock(MessageManager);
 
-    mockedMessageInstance = instance(firstMockedMessageClass);
-    mockedMessageInstance.content = content;
-    mockedMessageInstance.id = '1';
-
-    firstMockedMessageInstance = instance(secondMockedMessageClass);
-    firstMockedMessageInstance.content = 'test echo';
-    firstMockedMessageInstance.id = '2';
+    originalMockedMessageInstance = instance(originalMockedMessageClass);
+    originalMockedMessageInstance.content = content;
+    originalMockedMessageInstance.id = '1';
 
     const firstSnowflake = SnowflakeUtil.generate(1);
     const secondSnowflake = SnowflakeUtil.generate(2);
 
     const messageCollection: Collection<Snowflake, Message> = new Collection();
-    messageCollection.set(firstSnowflake, mockedMessageInstance);
-    messageCollection.set(secondSnowflake, firstMockedMessageInstance);
+    messageCollection.set(firstSnowflake, originalMockedMessageInstance);
+    messageCollection.set(secondSnowflake, addQuoteMockedMessageInstance);
 
     when(mockedMessageManagerClass.fetch()).thenResolve(messageCollection);
     mockedMessageManager = instance(mockedMessageManagerClass);
     when(mockedChannelClass.messages).thenReturn(mockedMessageManager);
 
     mockedChannelInstance = instance(mockedChannelClass);
-    when(firstMockedMessageClass.channel).thenReturn(mockedChannelInstance);
+    when(addQuoteMockedMessageClass.channel).thenReturn(mockedChannelInstance);
+    addQuoteMockedMessageInstance = instance(addQuoteMockedMessageClass);
+    addQuoteMockedMessageInstance.content = 'test echo';
+    addQuoteMockedMessageInstance.id = '2';
 
     mockedQuoteManagerClass = mock<QuoteManager>();
     mockedQuoteManagerInstance = instance(mockedQuoteManagerClass);
@@ -80,19 +80,26 @@ describe('AddQuoteHandler', () => {
   });
 
   it('calls add on the quote manager', async () => {
-    await addQuoteHandler.handle(mockedMessageInstance);
+    await addQuoteHandler.handle(addQuoteMockedMessageInstance);
 
     verify(mockedQuoteManagerClass.add(anything())).once();
   });
 
   it('constructs a quote with expected fields', async () => {
-    await addQuoteHandler.handle(mockedMessageInstance);
+    await addQuoteHandler.handle(addQuoteMockedMessageInstance);
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const [quote] = capture(mockedQuoteManagerClass.add).first();
 
-    expect(quote.author).to.be.equal(secondUsername);
-    expect(quote.blamer).to.be.equal(firstUsername);
+    expect(quote.author).to.be.equal(authorUsername);
+    expect(quote.blamer).to.be.equal(blamerUsername);
     expect(quote.quote).to.be.equal(content);
+  });
+
+  it('does not match bad quotes', async () => {
+    addQuoteMockedMessageInstance.content = 'bad';
+    await addQuoteHandler.handle(addQuoteMockedMessageInstance);
+
+    verify(mockedQuoteManagerClass.add(anything())).never();
   });
 });
