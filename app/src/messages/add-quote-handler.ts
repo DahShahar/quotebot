@@ -24,7 +24,7 @@ export class AddQuoteHandler implements MessageHandler {
     const origContent = message.content;
     return message.channel.messages.fetch().then(fetchedMessages => {
       const originalMessage: Message | undefined = fetchedMessages.find(m => {
-        return m.id !== message.id && m.content === origContent;
+        return m.content === origContent;
       });
 
       if (originalMessage === undefined) {
@@ -32,7 +32,7 @@ export class AddQuoteHandler implements MessageHandler {
       }
 
       const quote = new QuoteBuilder()
-        .withQuote(message.content)
+        .withQuote(origContent)
         .withBlamer(message.author.username)
         .withAuthor(originalMessage.author.username)
         .build();
