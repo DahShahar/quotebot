@@ -6,6 +6,7 @@ import {TYPES} from '../types';
 
 @injectable()
 export class QuoteBotMessageHandler implements CompoundMessageHandler {
+  private qualifierToHandlerMapping: Map<string, MessageHandler>;
   private messageHandlers: MessageHandler[];
   private qualifier: string;
 
@@ -15,6 +16,11 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
   ) {
     this.messageHandlers = messageHandlers;
     this.qualifier = qualifier;
+
+    this.qualifierToHandlerMapping = new Map();
+    for (let handler of messageHandlers) {
+      this.qualifierToHandlerMapping.set(handler.getIdentifier(), handler);
+    }
   }
 
   handleMessage(message: Message): Promise<Message | Message[]> {
@@ -25,15 +31,15 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
     // as part of checking if we should ignore this message,
     // we verified it started with the qualifier
     message.content = message.content.substring(this.qualifier.length);
+    const [qualifier, restOfTheMessage] = message.content.split(/ (.*)/, 2);
 
-    for (const handler of this.messageHandlers) {
-      if (handler.identify(message)) {
-        message.content = message.content.substring(handler.getIdentifier().length).trim();
-        return handler.handle(message);
-      }
+    const handler = this.qualifierToHandlerMapping.get(qualifier);
+    if (handler === undefined) {
+      return Promise.reject();
     }
 
-    return Promise.reject();
+    message.content = restOfTheMessage;
+    return handler.handle(message);
   }
 
   shouldIgnoreMessage(message: Message): boolean {

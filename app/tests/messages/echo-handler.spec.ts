@@ -21,15 +21,6 @@ describe('EchoHandler', () => {
     echoHandler = new EchoHandler();
   });
 
-  it('should respond when the message starts with echo', () => {
-    expect(echoHandler.identify(mockedMessageInstance)).to.be.true;
-  });
-
-  it('should not respond when the message does not start with echo', () => {
-    mockedMessageInstance.content = 'bad message';
-    expect(echoHandler.identify(mockedMessageInstance)).to.be.false;
-  });
-
   it('should respond with with the same message', async () => {
     await echoHandler.handle(mockedMessageInstance);
 

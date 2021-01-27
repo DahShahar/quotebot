@@ -9,10 +9,6 @@ export class EchoHandler implements MessageHandler {
     return 'echo';
   }
 
-  identify(message: Message): boolean {
-    return message.content.startsWith(this.getIdentifier());
-  }
-
   handle(message: Message): Promise<Message | Message[]> {
     return message.reply(message.content);
   }

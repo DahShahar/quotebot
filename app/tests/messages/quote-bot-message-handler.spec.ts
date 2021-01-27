@@ -50,15 +50,13 @@ describe('QuoteBotMessageHandler', () => {
   });
 
   it('should pass it to the handler', async () => {
-    whenIsActionableThenReturn(true);
-
     await service.handleMessage(mockedMessageInstance);
 
     verify(mockedEchoHandlerClass.handle(mockedMessageInstance)).once();
   })
 
   it('should not pass it on', async () => {
-    whenIsActionableThenReturn(false);
+    mockedMessageInstance.content = '!notecho a good string';
 
     await service.handleMessage(mockedMessageInstance).then(() => {
       // Successful promise is unexpected, so we fail the test
@@ -73,9 +71,5 @@ describe('QuoteBotMessageHandler', () => {
   function setMessageContents() {
     mockedUser.bot = false;
     mockedMessageInstance.content = qualifier + 'echo Non-empty string';
-  }
-
-  function whenIsActionableThenReturn(result: boolean) {
-    when(mockedEchoHandlerClass.identify(mockedMessageInstance)).thenReturn(result);
   }
 });

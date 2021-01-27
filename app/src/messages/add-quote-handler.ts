@@ -20,10 +20,6 @@ export class AddQuoteHandler implements MessageHandler {
     return 'addquote';
   }
 
-  identify(message: Message): boolean {
-    return message.content.startsWith(this.getIdentifier());
-  }
-
   handle(message: Message): Promise<Message | Message[]>  {
     const origContent = message.content;
     return message.channel.messages.fetch().then(fetchedMessages => {
