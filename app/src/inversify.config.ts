@@ -6,6 +6,7 @@ import {MessageHandler} from './messages/message-handler';
 import {EchoHandler} from './messages/echo-handler';
 import {AddQuoteHandler} from './messages/add-quote-handler';
 import {GetQuoteHandler} from './messages/get-quote-handler';
+import {QuoteItHandler} from './messages/quote-it-handler';
 import {CompoundMessageHandler} from './messages/compound-message-handler';
 import {QuoteBotMessageHandler} from './messages/quote-bot-message-handler';
 import {QuoteManager} from './quotes/quote-manager';
@@ -32,6 +33,7 @@ const messageHandlers: MessageHandler[] = [
   new EchoHandler(),
   new AddQuoteHandler(container.get(TYPES.QuoteManager)),
   new GetQuoteHandler(container.get(TYPES.QuoteManager)),
+  new QuoteItHandler(container.get(TYPES.QuoteManager)),
 ];
 
 container.bind<MessageHandler[]>(TYPES.MessageHandlers).toConstantValue(messageHandlers);

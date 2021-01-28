@@ -1,0 +1,45 @@
+import {Message} from 'discord.js';
+import {MessageHandler} from './message-handler';
+import {QuoteManager} from '../quotes/quote-manager';
+import {QuoteBuilder} from '../quotes/quote-builder';
+import {injectable, inject} from 'inversify';
+import {TYPES} from '../types';
+
+@injectable()
+export class QuoteItHandler implements MessageHandler {
+
+  private quoteManager: QuoteManager;
+
+  constructor(
+    @inject(TYPES.QuoteManager) quoteManager: QuoteManager
+  ) {
+    this.quoteManager = quoteManager;
+  }
+
+  getIdentifier(): string {
+    return 'quoteit';
+  }
+
+  handle(message: Message): Promise<Message | Message[]> {
+    const repliedToReference = message.reference;
+    if (repliedToReference === null || typeof repliedToReference === 'undefined') {
+      return Promise.reject();
+    }
+
+    const repliedToMessageId = repliedToReference.messageID;
+    if (repliedToMessageId === null || typeof repliedToMessageId === 'undefined') {
+      return Promise.reject();
+    }
+
+    return message.channel.messages.fetch(repliedToMessageId).then(repliedToMessage => {
+      const quote = new QuoteBuilder()
+        .withQuote(repliedToMessage.content)
+        .withAuthor(repliedToMessage.author.username)
+        .withBlamer(message.author.username)
+        .build();
+
+        this.quoteManager.add(quote);
+        return message.channel.send(`Added quote! Original by: ${quote.author}, added by: ${quote.blamer}`);
+    });
+  }
+}
