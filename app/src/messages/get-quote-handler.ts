@@ -12,7 +12,7 @@ export class GetQuoteHandler implements MessageHandler {
 
   constructor(
     @inject(TYPES.QuoteManager) quoteManager: QuoteManager,
-    @inject(TYPES.QuoteFormatter) quoteFormatter: QuoteFormatter
+    @inject(TYPES.BasicQuoteFormatter) quoteFormatter: QuoteFormatter
   ) {
     this.quoteManager = quoteManager;
     this.quoteFormatter = quoteFormatter;
