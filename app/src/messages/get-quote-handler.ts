@@ -20,6 +20,6 @@ export class GetQuoteHandler implements MessageHandler {
   }
 
   handle(message: Message): Promise<Message | Message[]>  {
-    return message.reply(this.quoteManager.get());
+    return message.channel.send(this.quoteManager.get());
   }
 }

@@ -34,7 +34,6 @@ export class TestContext {
   constructor() {
     this.originalMockedMessageClass = mock(Message);
     this.addQuoteMockedMessageClass = mock(Message);
-
     this.quoteItMockedMessageClass = mock(Message);
 
     this.authorMockedUserClass = mock(User);
@@ -72,6 +71,7 @@ export class TestContext {
     this.mockedChannelInstance = instance(this.mockedChannelClass);
     when(this.addQuoteMockedMessageClass.channel).thenReturn(this.mockedChannelInstance);
     when(this.quoteItMockedMessageClass.channel).thenReturn(this.mockedChannelInstance);
+    when(this.originalMockedMessageClass.channel).thenReturn(this.mockedChannelInstance);
     this.addQuoteMockedMessageInstance = instance(this.addQuoteMockedMessageClass);
     this.addQuoteMockedMessageInstance.content = 'this was called with addquote';
     this.addQuoteMockedMessageInstance.id = secondSnowflake;

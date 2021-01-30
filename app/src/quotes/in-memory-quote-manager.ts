@@ -5,15 +5,23 @@ import {injectable} from 'inversify';
 @injectable()
 export class InMemoryQuoteManager implements QuoteManager {
 
-  private quotes:Quote[] = [];
+  private quotes: Map<number, Quote>;
+
+  constructor() {
+    this.quotes = new Map();
+  }
 
   get(): string {
-    const randomQuote: Quote = this.quotes[Math.floor(Math.random() * this.quotes.length)];
-    return `${randomQuote.quote} -- written by ${randomQuote.author}`;
+    const quoteNumber = 1 + Math.floor(Math.random() * this.quotes.size);
+    const randomQuote = this.quotes.get(quoteNumber);
+    if (randomQuote === undefined) {
+      return `Could not find a quote, there are ${this.quotes.size} available`;
+    }
+    return `<${randomQuote.author}>: ${quoteNumber}. ${randomQuote.quote}`;
   }
 
   add(quote: Quote): boolean {
-    this.quotes.push(quote);
+    this.quotes.set(this.quotes.size + 1, quote);
     return true;
   }
 }
