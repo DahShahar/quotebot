@@ -31,11 +31,16 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
     // as part of checking if we should ignore this message,
     // we verified it started with the qualifier
     message.content = message.content.substring(this.qualifier.length);
-    const [qualifier, restOfTheMessage] = message.content.split(/ (.*)/, 2);
+    const [qualifier, restOfTheMessagePart] = message.content.split(/ (.*)/, 2);
+    let restOfTheMessage = restOfTheMessagePart;
 
     const handler = this.qualifierToHandlerMapping.get(qualifier);
     if (handler === undefined) {
       return Promise.reject();
+    }
+
+    if (restOfTheMessage === undefined) {
+      restOfTheMessage = '';
     }
 
     message.content = restOfTheMessage;

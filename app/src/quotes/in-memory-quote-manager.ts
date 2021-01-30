@@ -10,13 +10,24 @@ export class InMemoryQuoteManager implements QuoteManager {
     this.quotes = new Map<number, Quote>();
   }
 
-  get(): string {
+  get(): Quote | undefined {
     const quoteNumber = 1 + Math.floor(Math.random() * this.quotes.size);
     const randomQuote = this.quotes.get(quoteNumber);
-    if (randomQuote === undefined) {
-      return `Could not find a quote, there are ${this.quotes.size} available`;
-    }
-    return `<${randomQuote.author}>: ${quoteNumber}. ${randomQuote.quote}`;
+    return randomQuote;
+  }
+
+  getByIndex(num: number): Quote | undefined {
+    return this.quotes.get(num);
+  }
+
+  getBySearch(search: string): Map<number, Quote> {
+    const quotesMap: Map<number, Quote> = new Map<number, Quote>();
+    this.quotes.forEach((value, key) => {
+      if (value.quote.includes(search) || value.author === search) {
+        quotesMap.set(key, value);
+      }
+    });
+    return quotesMap;
   }
 
   add(quote: Quote): boolean {
