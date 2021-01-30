@@ -8,7 +8,7 @@ export class InMemoryQuoteManager implements QuoteManager {
   private quotes: Map<number, Quote>;
 
   constructor() {
-    this.quotes = new Map();
+    this.quotes = new Map<number, Quote>();
   }
 
   get(): string {

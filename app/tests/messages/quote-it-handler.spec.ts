@@ -1,11 +1,10 @@
 import 'reflect-metadata';
 import 'mocha'
-import {Collection, TextChannel, Message, MessageManager, MessageReference, Snowflake, SnowflakeUtil, User} from 'discord.js';
 import {QuoteManager} from '../../src/quotes/quote-manager';
 import {QuoteItHandler} from '../../src/messages/quote-it-handler';
 import {TestContext} from '../utils/test-context';
 import {expect} from 'chai';
-import {anything, capture, deepEqual, instance, mock, match, verify, when} from 'ts-mockito';
+import {anything, capture, instance, mock, verify} from 'ts-mockito';
 
 describe('QuoteItHandler', () => {
 

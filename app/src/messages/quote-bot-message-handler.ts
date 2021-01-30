@@ -17,8 +17,8 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
     this.messageHandlers = messageHandlers;
     this.qualifier = qualifier;
 
-    this.qualifierToHandlerMapping = new Map();
-    for (let handler of messageHandlers) {
+    this.qualifierToHandlerMapping = new Map<string, MessageHandler>();
+    for (const handler of messageHandlers) {
       this.qualifierToHandlerMapping.set(handler.getIdentifier(), handler);
     }
   }

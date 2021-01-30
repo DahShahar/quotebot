@@ -1,7 +1,6 @@
 import {Collection, TextChannel, Message, MessageManager, MessageReference, Snowflake, SnowflakeUtil, User} from 'discord.js';
-import {QuoteManager} from '../../src/quotes/quote-manager';
 import {resolvableInstance} from '../utils/resolvableInstance';
-import {anything, capture, deepEqual, instance, mock, verify, when} from 'ts-mockito';
+import {deepEqual, instance, mock, when} from 'ts-mockito';
 
 export class TestContext {
     public authorUsername = 'shahar';
