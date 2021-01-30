@@ -10,7 +10,7 @@
     "clean": "rm -rf build/",
     "release": "npm run build && npm run test",
     "start": "node --require dotenv/config build/index.js",
-    "test": "mocha -r ts-node/register \"tests/**/*.spec.ts\"",
+    "test": "env TS_NODE_COMPILER_OPTIONS='{\"strictPropertyInitialization\": false }' mocha",
     "watch": "tsc -p tsconfig.json -w"
   },
   "keywords": [

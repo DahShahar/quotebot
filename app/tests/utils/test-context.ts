@@ -31,11 +31,54 @@ export class TestContext {
     public mockedMessageManagerClass: MessageManager;
     public mockedMessageManager: MessageManager;
 
+    public messageCollection: Collection<Snowflake, Message>;
+
   constructor() {
+    this.setUpMessageMocks();
+
+    this.setUpMessageInstances();
+
+    this.setUpUserMocks();
+
+    this.setUpChannelMock();
+
+    this.setUpMessageManagerMock();
+  }
+
+  private setUpMessageMocks() {
     this.originalMockedMessageClass = mock(Message);
     this.addQuoteMockedMessageClass = mock(Message);
     this.quoteItMockedMessageClass = mock(Message);
+  }
 
+  private setUpMessageInstances() {
+    const firstSnowflake = SnowflakeUtil.generate(1);
+    const secondSnowflake = SnowflakeUtil.generate(2);
+    const thirdSnowflake = SnowflakeUtil.generate(3);
+    this.messageCollection = new Collection();
+
+    this.originalMockedMessageInstance = resolvableInstance(this.originalMockedMessageClass);
+    this.originalMockedMessageInstance.content = 'this is the o.g. quote';
+    this.originalMockedMessageInstance.id = firstSnowflake;
+    this.messageCollection.set(firstSnowflake, this.originalMockedMessageInstance);
+
+    this.addQuoteMockedMessageInstance = instance(this.addQuoteMockedMessageClass);
+    this.addQuoteMockedMessageInstance.content = 'this was called with addquote';
+    this.addQuoteMockedMessageInstance.id = secondSnowflake;
+    this.messageCollection.set(secondSnowflake, this.addQuoteMockedMessageInstance);
+
+    this.quoteItMockedMessageInstance = instance(this.quoteItMockedMessageClass);
+    this.quoteItMockedMessageInstance.content = 'this was called with quoteit';
+    this.quoteItMockedMessageInstance.id = thirdSnowflake;
+    this.messageCollection.set(thirdSnowflake, this.quoteItMockedMessageInstance);
+
+    this.mockedMessageReferenceClass = mock<MessageReference>();
+    when(this.mockedMessageReferenceClass.messageID).thenReturn(this.originalMockedMessageInstance.id);
+    this.mockedMessageReference = instance(this.mockedMessageReferenceClass);
+    when(this.quoteItMockedMessageClass.reference).thenReturn(this.mockedMessageReference);
+  }
+
+  private setUpUserMocks() {
     this.authorMockedUserClass = mock(User);
     this.authorMockedUser = instance(this.authorMockedUserClass);
     when(this.originalMockedMessageClass.author).thenReturn(this.authorMockedUser);
@@ -46,45 +89,24 @@ export class TestContext {
     when(this.addQuoteMockedMessageClass.author).thenReturn(this.blamerMockedUser);
     when(this.quoteItMockedMessageClass.author).thenReturn(this.blamerMockedUser);
     this.blamerMockedUser.username = this.blamerUsername;
+  }
 
+  private setUpChannelMock() {
     this.mockedChannelClass = mock(TextChannel);
-
-    this.mockedMessageManagerClass = mock(MessageManager);
-
-    this.originalMockedMessageInstance = resolvableInstance(this.originalMockedMessageClass);
-    this.originalMockedMessageInstance.content = 'this is the o.g. quote';
-
-    const firstSnowflake = SnowflakeUtil.generate(1);
-    this.originalMockedMessageInstance.id = firstSnowflake;
-
-    const secondSnowflake = SnowflakeUtil.generate(2);
-    const thirdSnowflake = SnowflakeUtil.generate(3);
-
-    const messageCollection: Collection<Snowflake, Message> = new Collection();
-    messageCollection.set(firstSnowflake, this.originalMockedMessageInstance);
-
-    when(this.mockedMessageManagerClass.fetch()).thenResolve(messageCollection);
-    when(this.mockedMessageManagerClass.fetch(deepEqual(firstSnowflake))).thenResolve(this.originalMockedMessageInstance);
-    this.mockedMessageManager = instance(this.mockedMessageManagerClass);
-    when(this.mockedChannelClass.messages).thenReturn(this.mockedMessageManager);
 
     this.mockedChannelInstance = instance(this.mockedChannelClass);
     when(this.addQuoteMockedMessageClass.channel).thenReturn(this.mockedChannelInstance);
     when(this.quoteItMockedMessageClass.channel).thenReturn(this.mockedChannelInstance);
     when(this.originalMockedMessageClass.channel).thenReturn(this.mockedChannelInstance);
-    this.addQuoteMockedMessageInstance = instance(this.addQuoteMockedMessageClass);
-    this.addQuoteMockedMessageInstance.content = 'this was called with addquote';
-    this.addQuoteMockedMessageInstance.id = secondSnowflake;
-    messageCollection.set(secondSnowflake, this.addQuoteMockedMessageInstance);
+  }
 
-    this.mockedMessageReferenceClass = mock<MessageReference>();
-    when(this.mockedMessageReferenceClass.messageID).thenReturn(this.originalMockedMessageInstance.id);
-    this.mockedMessageReference = instance(this.mockedMessageReferenceClass);
-    when(this.quoteItMockedMessageClass.reference).thenReturn(this.mockedMessageReference);
-    this.quoteItMockedMessageInstance = instance(this.quoteItMockedMessageClass);
-    this.quoteItMockedMessageInstance.content = 'this was called with quoteit';
-    this.quoteItMockedMessageInstance.id = thirdSnowflake;
-    messageCollection.set(thirdSnowflake, this.quoteItMockedMessageInstance);
+  private setUpMessageManagerMock() {
+    this.mockedMessageManagerClass = mock(MessageManager);
+    when(this.mockedMessageManagerClass.fetch()).thenResolve(this.messageCollection);
+    when(this.mockedMessageManagerClass.fetch(deepEqual(this.originalMockedMessageInstance.id))).thenResolve(this.originalMockedMessageInstance);
+
+    this.mockedMessageManager = instance(this.mockedMessageManagerClass);
+    when(this.mockedChannelClass.messages).thenReturn(this.mockedMessageManager);
   }
 
 }
