@@ -1,10 +1,9 @@
-import {QuoteManager} from './quote-manager';
-import {Quote} from './quote';
-import {injectable} from 'inversify';
+import { QuoteManager } from './quote-manager';
+import { Quote } from './quote';
+import { injectable } from 'inversify';
 
 @injectable()
 export class InMemoryQuoteManager implements QuoteManager {
-
   private quotes: Map<number, Quote>;
 
   constructor() {

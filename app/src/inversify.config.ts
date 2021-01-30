@@ -1,19 +1,19 @@
 import 'reflect-metadata';
-import {Container} from 'inversify';
-import {TYPES} from './types';
-import {Bot} from './bot';
-import {MessageHandler} from './messages/message-handler';
-import {EchoHandler} from './messages/echo-handler';
-import {AddQuoteHandler} from './messages/add-quote-handler';
-import {GetQuoteHandler} from './messages/get-quote-handler';
-import {QuoteItHandler} from './messages/quote-it-handler';
-import {CompoundMessageHandler} from './messages/compound-message-handler';
-import {QuoteBotMessageHandler} from './messages/quote-bot-message-handler';
-import {QuoteManager} from './quotes/quote-manager';
-import {InMemoryQuoteManager} from './quotes/in-memory-quote-manager';
-import {Client} from 'discord.js';
+import { Container } from 'inversify';
+import { TYPES } from './types';
+import { Bot } from './bot';
+import { MessageHandler } from './messages/message-handler';
+import { EchoHandler } from './messages/echo-handler';
+import { AddQuoteHandler } from './messages/add-quote-handler';
+import { GetQuoteHandler } from './messages/get-quote-handler';
+import { QuoteItHandler } from './messages/quote-it-handler';
+import { CompoundMessageHandler } from './messages/compound-message-handler';
+import { QuoteBotMessageHandler } from './messages/quote-bot-message-handler';
+import { QuoteManager } from './quotes/quote-manager';
+import { InMemoryQuoteManager } from './quotes/in-memory-quote-manager';
+import { Client } from 'discord.js';
 
-function stringOrThrow(check: string | undefined) : string {
+function stringOrThrow(check: string | undefined): string {
   if (check !== null && check !== undefined) {
     return check;
   }

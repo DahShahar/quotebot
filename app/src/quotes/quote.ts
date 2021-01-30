@@ -2,13 +2,13 @@ export interface Quote {
   /**
    * The person who said the quote
    */
-  author: string,
+  author: string;
   /**
    * The person who added the quote to our context
    */
-  blamer: string,
+  blamer: string;
   /**
    * The actual content of the quote
    */
-  quote: string,
+  quote: string;
 }

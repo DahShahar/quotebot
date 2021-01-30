@@ -1,9 +1,9 @@
 import 'reflect-metadata';
-import 'mocha'
-import {QuoteManager} from '../../src/quotes/quote-manager';
-import {TestContext} from '../utils/test-context';
-import {GetQuoteHandler} from '../../src/messages/get-quote-handler';
-import {instance, mock, verify, when} from 'ts-mockito';
+import 'mocha';
+import { QuoteManager } from '../../src/quotes/quote-manager';
+import { TestContext } from '../utils/test-context';
+import { GetQuoteHandler } from '../../src/messages/get-quote-handler';
+import { instance, mock, verify, when } from 'ts-mockito';
 
 describe('GetQuoteHandler', () => {
   const quote = 'hello world';

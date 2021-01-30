@@ -1,36 +1,45 @@
-import {Collection, TextChannel, Message, MessageManager, MessageReference, Snowflake, SnowflakeUtil, User} from 'discord.js';
-import {resolvableInstance} from '../utils/resolvableInstance';
-import {deepEqual, instance, mock, when} from 'ts-mockito';
+import {
+  Collection,
+  TextChannel,
+  Message,
+  MessageManager,
+  MessageReference,
+  Snowflake,
+  SnowflakeUtil,
+  User,
+} from 'discord.js';
+import { resolvableInstance } from '../utils/resolvableInstance';
+import { deepEqual, instance, mock, when } from 'ts-mockito';
 
 export class TestContext {
-    public authorUsername = 'shahar';
-    public blamerUsername = 'dahan';
+  public authorUsername = 'shahar';
+  public blamerUsername = 'dahan';
 
-    public originalMockedMessageClass: Message;
-    public originalMockedMessageInstance: Message;
+  public originalMockedMessageClass: Message;
+  public originalMockedMessageInstance: Message;
 
-    public addQuoteMockedMessageClass: Message;
-    public addQuoteMockedMessageInstance: Message;
+  public addQuoteMockedMessageClass: Message;
+  public addQuoteMockedMessageInstance: Message;
 
-    public quoteItMockedMessageClass: Message;
-    public quoteItMockedMessageInstance: Message;
+  public quoteItMockedMessageClass: Message;
+  public quoteItMockedMessageInstance: Message;
 
-    public authorMockedUserClass: User;
-    public authorMockedUser: User;
+  public authorMockedUserClass: User;
+  public authorMockedUser: User;
 
-    public blamerMockedUserClass: User;
-    public blamerMockedUser: User;
+  public blamerMockedUserClass: User;
+  public blamerMockedUser: User;
 
-    public mockedChannelClass: TextChannel;
-    public mockedChannelInstance: TextChannel;
+  public mockedChannelClass: TextChannel;
+  public mockedChannelInstance: TextChannel;
 
-    public mockedMessageReferenceClass: MessageReference;
-    public mockedMessageReference: MessageReference;
+  public mockedMessageReferenceClass: MessageReference;
+  public mockedMessageReference: MessageReference;
 
-    public mockedMessageManagerClass: MessageManager;
-    public mockedMessageManager: MessageManager;
+  public mockedMessageManagerClass: MessageManager;
+  public mockedMessageManager: MessageManager;
 
-    public messageCollection: Collection<Snowflake, Message>;
+  public messageCollection: Collection<Snowflake, Message>;
 
   constructor() {
     this.setUpMessageMocks();
@@ -102,10 +111,11 @@ export class TestContext {
   private setUpMessageManagerMock() {
     this.mockedMessageManagerClass = mock(MessageManager);
     when(this.mockedMessageManagerClass.fetch()).thenResolve(this.messageCollection);
-    when(this.mockedMessageManagerClass.fetch(deepEqual(this.originalMockedMessageInstance.id))).thenResolve(this.originalMockedMessageInstance);
+    when(this.mockedMessageManagerClass.fetch(deepEqual(this.originalMockedMessageInstance.id))).thenResolve(
+      this.originalMockedMessageInstance
+    );
 
     this.mockedMessageManager = instance(this.mockedMessageManagerClass);
     when(this.mockedChannelClass.messages).thenReturn(this.mockedMessageManager);
   }
-
 }

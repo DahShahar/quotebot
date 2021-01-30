@@ -1,4 +1,4 @@
-import {Quote} from './quote';
+import { Quote } from './quote';
 
 export interface QuoteManager {
   /**

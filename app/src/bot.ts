@@ -1,12 +1,11 @@
-import {Client, Message} from 'discord.js';
-import {inject, injectable} from 'inversify';
-import {TYPES} from './types';
-import {MessageHandler} from './messages/message-handler';
-import {CompoundMessageHandler} from './messages/compound-message-handler';
+import { Client, Message } from 'discord.js';
+import { inject, injectable } from 'inversify';
+import { TYPES } from './types';
+import { MessageHandler } from './messages/message-handler';
+import { CompoundMessageHandler } from './messages/compound-message-handler';
 
 @injectable()
 export class Bot {
-
   private client: Client;
   private messageHandlers: CompoundMessageHandler;
   private readonly token: string;
@@ -14,7 +13,7 @@ export class Bot {
   constructor(
     @inject(TYPES.Client) client: Client,
     @inject(TYPES.Token) token: string,
-    @inject(TYPES.MessageHandler) messageHandlers: CompoundMessageHandler,
+    @inject(TYPES.MessageHandler) messageHandlers: CompoundMessageHandler
   ) {
     this.client = client;
     this.token = token;
@@ -28,10 +27,13 @@ export class Bot {
   }
 
   private handleMessage(message: Message): void {
-    this.messageHandlers.handleMessage(message).then(() => {
-      console.log('Handled!');
-    }).catch(() => {
-      console.log('Not handled :(');
-    });
+    this.messageHandlers
+      .handleMessage(message)
+      .then(() => {
+        console.log('Handled!');
+      })
+      .catch(() => {
+        console.log('Not handled :(');
+      });
   }
 }

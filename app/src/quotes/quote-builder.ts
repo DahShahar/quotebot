@@ -1,14 +1,13 @@
-import {Quote} from './quote';
+import { Quote } from './quote';
 
 export class QuoteBuilder {
-
   private readonly quote: Quote;
 
   constructor() {
     this.quote = {
       author: '',
-      blamer:  '',
-      quote:  '',
+      blamer: '',
+      quote: '',
     };
   }
 

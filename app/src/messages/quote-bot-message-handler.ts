@@ -1,8 +1,8 @@
-import {Message} from 'discord.js';
-import {MessageHandler} from './message-handler';
-import {CompoundMessageHandler} from './compound-message-handler';
-import {injectable, inject} from 'inversify';
-import {TYPES} from '../types';
+import { Message } from 'discord.js';
+import { MessageHandler } from './message-handler';
+import { CompoundMessageHandler } from './compound-message-handler';
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../types';
 
 @injectable()
 export class QuoteBotMessageHandler implements CompoundMessageHandler {

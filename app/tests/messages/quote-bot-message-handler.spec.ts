@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 import 'mocha';
-import {expect} from 'chai';
-import {EchoHandler} from '../../src/messages/echo-handler';
-import {QuoteBotMessageHandler} from '../../src/messages/quote-bot-message-handler';
-import {instance, mock, verify, when} from 'ts-mockito';
-import {Message, User} from 'discord.js';
+import { expect } from 'chai';
+import { EchoHandler } from '../../src/messages/echo-handler';
+import { QuoteBotMessageHandler } from '../../src/messages/quote-bot-message-handler';
+import { instance, mock, verify, when } from 'ts-mockito';
+import { Message, User } from 'discord.js';
 
 describe('QuoteBotMessageHandler', () => {
   let mockedEchoHandlerClass: EchoHandler;
@@ -28,15 +28,15 @@ describe('QuoteBotMessageHandler', () => {
     when(mockedMessageClass.author).thenReturn(mockedUser);
 
     mockedMessageInstance = instance(mockedMessageClass);
-    qualifier = '!'
+    qualifier = '!';
     setMessageContents();
 
     service = new QuoteBotMessageHandler([mockedEchoHandlerInstance], qualifier);
-  })
+  });
 
   it('should handle this message', () => {
     expect(service.shouldIgnoreMessage(mockedMessageInstance)).to.be.false;
-  })
+  });
 
   it('should not handle this message', () => {
     mockedMessageInstance.content = 'THIS IS BAD';
@@ -53,20 +53,23 @@ describe('QuoteBotMessageHandler', () => {
     await service.handleMessage(mockedMessageInstance);
 
     verify(mockedEchoHandlerClass.handle(mockedMessageInstance)).once();
-  })
+  });
 
   it('should not pass it on', async () => {
     mockedMessageInstance.content = '!notecho a good string';
 
-    await service.handleMessage(mockedMessageInstance).then(() => {
-      // Successful promise is unexpected, so we fail the test
-      expect.fail('Unexpected promise');
-    }).catch(() => {
-      // Rejected promise is expected, so nothing happens here
-    });
+    await service
+      .handleMessage(mockedMessageInstance)
+      .then(() => {
+        // Successful promise is unexpected, so we fail the test
+        expect.fail('Unexpected promise');
+      })
+      .catch(() => {
+        // Rejected promise is expected, so nothing happens here
+      });
 
     verify(mockedEchoHandlerClass.handle(mockedMessageInstance)).never();
-  })
+  });
 
   function setMessageContents() {
     mockedUser.bot = false;

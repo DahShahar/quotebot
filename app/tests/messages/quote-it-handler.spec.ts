@@ -1,13 +1,12 @@
 import 'reflect-metadata';
-import 'mocha'
-import {QuoteManager} from '../../src/quotes/quote-manager';
-import {QuoteItHandler} from '../../src/messages/quote-it-handler';
-import {TestContext} from '../utils/test-context';
-import {expect} from 'chai';
-import {anything, capture, instance, mock, verify} from 'ts-mockito';
+import 'mocha';
+import { QuoteManager } from '../../src/quotes/quote-manager';
+import { QuoteItHandler } from '../../src/messages/quote-it-handler';
+import { TestContext } from '../utils/test-context';
+import { expect } from 'chai';
+import { anything, capture, instance, mock, verify } from 'ts-mockito';
 
 describe('QuoteItHandler', () => {
-
   let testContext: TestContext;
 
   let quoteItHandler: QuoteItHandler;
@@ -41,4 +40,3 @@ describe('QuoteItHandler', () => {
     expect(quote.quote).to.be.equal(testContext.originalMockedMessageInstance.content);
   });
 });
-

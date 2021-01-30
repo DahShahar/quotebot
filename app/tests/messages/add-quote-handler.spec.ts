@@ -1,13 +1,12 @@
 import 'reflect-metadata';
-import 'mocha'
-import {TestContext} from '../utils/test-context';
-import {QuoteManager} from '../../src/quotes/quote-manager';
-import {AddQuoteHandler} from '../../src/messages/add-quote-handler';
-import {expect} from 'chai';
-import {anything, capture, instance, mock, verify} from 'ts-mockito';
+import 'mocha';
+import { TestContext } from '../utils/test-context';
+import { QuoteManager } from '../../src/quotes/quote-manager';
+import { AddQuoteHandler } from '../../src/messages/add-quote-handler';
+import { expect } from 'chai';
+import { anything, capture, instance, mock, verify } from 'ts-mockito';
 
 describe('AddQuoteHandler', () => {
-
   let testContext: TestContext;
 
   let addQuoteHandler: AddQuoteHandler;
