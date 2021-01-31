@@ -21,9 +21,8 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
 
     this.qualifierToHandlerMapping = new Map<string, MessageHandler>();
     this.usage = [
-      "Here's how to use the bot.",
-      `Each command starts with ${this.qualifier}, and here's how they work:`,
-      "Send a message such as '!echo hello world' to see what happens.",
+      `To send the bot a command prefix your command with ${this.qualifier}.`,
+      "Send a message such as '!echo hello world' to see what happens. A failure will react with a 👎",
       '-------------------------------------------------------------------------',
       'usage or help: display this message',
     ];
