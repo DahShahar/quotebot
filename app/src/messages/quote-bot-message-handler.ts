@@ -10,6 +10,8 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
   private messageHandlers: MessageHandler[];
   private qualifier: string;
 
+  private usage: string[];
+
   constructor(
     @inject(TYPES.MessageHandlers) messageHandlers: MessageHandler[],
     @inject(TYPES.Qualifier) qualifier: string
@@ -18,8 +20,16 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
     this.qualifier = qualifier;
 
     this.qualifierToHandlerMapping = new Map<string, MessageHandler>();
+    this.usage = [
+      "Here's how to use the bot.",
+      `Each command starts with ${this.qualifier}, and here's how they work:`,
+      "Send a message such as '!echo hello world' to see what happens.",
+      '-------------------------------------------------------------------------',
+      'usage or help: display this message',
+    ];
     for (const handler of messageHandlers) {
       this.qualifierToHandlerMapping.set(handler.getIdentifier(), handler);
+      this.usage.push(handler.getUsage());
     }
   }
 
@@ -33,6 +43,10 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
     message.content = message.content.substring(this.qualifier.length);
     const [qualifier, restOfTheMessagePart] = message.content.split(/ (.*)/, 2);
     let restOfTheMessage = restOfTheMessagePart;
+
+    if (qualifier === 'usage' || qualifier === 'help') {
+      return message.author.send(this.usage);
+    }
 
     const handler = this.qualifierToHandlerMapping.get(qualifier);
     if (handler === undefined) {

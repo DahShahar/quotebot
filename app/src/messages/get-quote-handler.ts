@@ -22,6 +22,10 @@ export class GetQuoteHandler implements MessageHandler {
     return 'quote';
   }
 
+  getUsage(): string {
+    return `${this.getIdentifier()} [number?] [word?] : if you provide nothing, returns a random quote. If you provide a number, it'll provide the corresponding quote. If you provide a word, we'll search for the best quote that matches`;
+  }
+
   handle(message: Message): Promise<Message | Message[]> {
     let quote;
     const content = message.content;

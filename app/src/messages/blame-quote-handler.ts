@@ -22,6 +22,10 @@ export class BlameQuoteHandler implements MessageHandler {
     return 'blamequote';
   }
 
+  getUsage(): string {
+    return `${this.getIdentifier()} [number]: prints who added the [number]th quote`;
+  }
+
   handle(message: Message): Promise<Message | Message[]> {
     if (this.checkInt(message.content) === true) {
       const quote = this.quoteManager.getByIndex(parseInt(message.content));

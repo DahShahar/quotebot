@@ -17,6 +17,10 @@ export class QuoteItHandler implements MessageHandler {
     return 'quoteit';
   }
 
+  getUsage(): string {
+    return `${this.getIdentifier()} : Reply to a message with this command to add it as a quote`;
+  }
+
   handle(message: Message): Promise<Message | Message[]> {
     const repliedToReference = message.reference;
     if (repliedToReference === null || typeof repliedToReference === 'undefined') {

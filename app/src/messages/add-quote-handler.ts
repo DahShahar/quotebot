@@ -17,6 +17,10 @@ export class AddQuoteHandler implements MessageHandler {
     return 'addquote';
   }
 
+  getUsage(): string {
+    return `${this.getIdentifier()} [quote]: adds [quote] from this channel. Must be verbatim. It looks back in the history to see who authored it. Will fail if can't find anything (it's too old, or there's a typo)`;
+  }
+
   handle(message: Message): Promise<Message | Message[]> {
     const origContent = message.content;
     return message.channel.messages.fetch().then((fetchedMessages) => {
@@ -25,7 +29,7 @@ export class AddQuoteHandler implements MessageHandler {
       });
 
       if (originalMessage === undefined) {
-        return message.channel.send("Couldn't find who you're trying to quote :(");
+        return message.author.send("Couldn't find who or what you're trying to quote :(");
       }
 
       const quote = new QuoteBuilder()
