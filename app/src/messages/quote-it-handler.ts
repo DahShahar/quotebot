@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { Message, MessageReaction } from 'discord.js';
 import { MessageHandler } from './message-handler';
 import { QuoteManager } from '../quotes/quote-manager';
 import { QuoteBuilder } from '../quotes/quote-builder';
@@ -21,7 +21,7 @@ export class QuoteItHandler implements MessageHandler {
     return `${this.getIdentifier()} : Reply to a message with this command to add it as a quote`;
   }
 
-  handle(message: Message): Promise<Message | Message[]> {
+  handle(message: Message): Promise<Message | Message[] | MessageReaction> {
     const repliedToReference = message.reference;
     if (repliedToReference === null || typeof repliedToReference === 'undefined') {
       return Promise.reject();
@@ -40,7 +40,7 @@ export class QuoteItHandler implements MessageHandler {
         .build();
 
       this.quoteManager.add(quote);
-      return message.channel.send(`Added quote! Original by: ${quote.author}, added by: ${quote.blamer}`);
+      return message.react('👍');
     });
   }
 }

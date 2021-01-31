@@ -3,13 +3,14 @@ import {
   TextChannel,
   Message,
   MessageManager,
+  MessageReaction,
   MessageReference,
   Snowflake,
   SnowflakeUtil,
   User,
 } from 'discord.js';
 import { resolvableInstance } from '../utils/resolvableInstance';
-import { deepEqual, instance, mock, when } from 'ts-mockito';
+import { anything, deepEqual, instance, mock, when } from 'ts-mockito';
 
 export class TestContext {
   public authorUsername = 'shahar';
@@ -70,6 +71,7 @@ export class TestContext {
     this.originalMockedMessageInstance.id = firstSnowflake;
     this.messageCollection.set(firstSnowflake, this.originalMockedMessageInstance);
 
+    when(this.addQuoteMockedMessageClass.react(anything())).thenResolve(instance(mock(MessageReaction)));
     this.addQuoteMockedMessageInstance = instance(this.addQuoteMockedMessageClass);
     this.addQuoteMockedMessageInstance.content = 'this was called with addquote';
     this.addQuoteMockedMessageInstance.id = secondSnowflake;

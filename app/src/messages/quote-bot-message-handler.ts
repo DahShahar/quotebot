@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { Message, MessageReaction } from 'discord.js';
 import { MessageHandler } from './message-handler';
 import { CompoundMessageHandler } from './compound-message-handler';
 import { injectable, inject } from 'inversify';
@@ -33,7 +33,7 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
     }
   }
 
-  handleMessage(message: Message): Promise<Message | Message[]> {
+  handleMessage(message: Message): Promise<Message | Message[] | MessageReaction> {
     if (this.shouldIgnoreMessage(message)) {
       return Promise.reject();
     }
