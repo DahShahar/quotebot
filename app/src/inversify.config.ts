@@ -17,19 +17,21 @@ import { QuoteManager } from './quotes/quote-manager';
 import { InMemoryQuoteManager } from './quotes/in-memory-quote-manager';
 import { Client } from 'discord.js';
 
-function stringOrThrow(check: string | undefined): string {
+function stringOrThrow(check: string | undefined, errorMessage: string): string {
   if (check !== null && check !== undefined) {
     return check;
   }
-  throw new Error('Expected to find a string, was not');
+  throw new Error(errorMessage);
 }
 
 const container = new Container();
 
 container.bind<Bot>(TYPES.Bot).to(Bot).inSingletonScope();
 container.bind<Client>(TYPES.Client).toConstantValue(new Client());
-container.bind<string>(TYPES.Token).toConstantValue(stringOrThrow(process.env.TOKEN));
-container.bind<string>(TYPES.Qualifier).toConstantValue(stringOrThrow(process.env.QUALIFIER));
+container.bind<string>(TYPES.Token).toConstantValue(stringOrThrow(process.env.TOKEN, 'Could not find TOKEN'));
+container
+  .bind<string>(TYPES.Qualifier)
+  .toConstantValue(stringOrThrow(process.env.QUALIFIER, 'Could not find QUALIFIER'));
 
 container.bind<QuoteFormatter>(TYPES.BasicQuoteFormatter).to(BasicQuoteFormatter).inSingletonScope();
 container.bind<QuoteFormatter>(TYPES.BlameQuoteFormatter).to(BlameQuoteFormatter).inSingletonScope();
