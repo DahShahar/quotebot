@@ -23,7 +23,12 @@ export class InMemoryQuoteManager implements QuoteManager {
   getBySearch(search: string): Map<number, Quote> {
     const quotesMap: Map<number, Quote> = new Map<number, Quote>();
     this.quotes.forEach((value, key) => {
-      if (value.quote.includes(search) || value.author === search) {
+      console.log(value.quote);
+      console.log(search);
+      if (
+        value.quote.toLowerCase().includes(search.toLowerCase()) ||
+        value.author.toLowerCase() === search.toLowerCase()
+      ) {
         quotesMap.set(key, value);
       }
     });
