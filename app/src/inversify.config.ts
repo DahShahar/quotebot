@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { Container } from 'inversify';
 import { TYPES } from './types';
 import { Bot } from './bot';
+import { Quote } from './quotes/quote';
 import { MessageHandler } from './messages/message-handler';
 import { EchoHandler } from './messages/echo-handler';
 import { AddQuoteHandler } from './messages/add-quote-handler';
@@ -35,6 +36,9 @@ container
 
 container.bind<QuoteFormatter>(TYPES.BasicQuoteFormatter).to(BasicQuoteFormatter).inSingletonScope();
 container.bind<QuoteFormatter>(TYPES.BlameQuoteFormatter).to(BlameQuoteFormatter).inSingletonScope();
+
+container.bind<Map<number, Quote>>(TYPES.QuoteMapping).toConstantValue(new Map<number, Quote>());
+
 container.bind<QuoteManager>(TYPES.QuoteManager).to(InMemoryQuoteManager).inSingletonScope();
 
 const messageHandlers: MessageHandler[] = [

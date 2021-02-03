@@ -7,5 +7,6 @@ export const TYPES = {
   MessageHandler: Symbol('MessageHandler'),
   Qualifier: Symbol('Qualifier'),
   QuoteManager: Symbol('QuoteManager'),
+  QuoteMapping: Symbol('QuoteMapping'),
   Token: Symbol('Token'),
 };

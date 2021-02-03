@@ -1,13 +1,18 @@
 import { QuoteManager } from './quote-manager';
 import { Quote } from './quote';
-import { injectable } from 'inversify';
+import { TYPES } from '../types';
+import { inject, injectable } from 'inversify';
 
 @injectable()
 export class InMemoryQuoteManager implements QuoteManager {
   private quotes: Map<number, Quote>;
 
-  constructor() {
-    this.quotes = new Map<number, Quote>();
+  constructor(@inject(TYPES.QuoteMapping) quotes?: Map<number, Quote>) {
+    if (quotes) {
+      this.quotes = quotes;
+    } else {
+      this.quotes = new Map<number, Quote>();
+    }
   }
 
   get(): Quote | undefined {
