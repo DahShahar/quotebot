@@ -1,3 +1,4 @@
+import { readFileSync, writeFileSync } from 'fs';
 import 'reflect-metadata';
 import { Container } from 'inversify';
 import { TYPES } from './types';
@@ -18,11 +19,37 @@ import { QuoteManager } from './quotes/quote-manager';
 import { InMemoryQuoteManager } from './quotes/in-memory-quote-manager';
 import { Client } from 'discord.js';
 
+const QUOTE_MAPPING_PATH = './quoteMapping.json';
+
 function stringOrThrow(check: string | undefined, errorMessage: string): string {
   if (check !== null && check !== undefined) {
     return check;
   }
   throw new Error(errorMessage);
+}
+
+function flushJson(path: string, mapping: Map<any, any>) {
+  try {
+    writeFileSync(path, JSON.stringify(Object.fromEntries(mapping)));
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+function loadMappingFromFile(path: string): Map<number, Quote> {
+  try {
+    const jsonMap = new Map<string, Quote>(Object.entries(JSON.parse(readFileSync(path, 'utf8'))));
+    const mapping = new Map<number, Quote>();
+    jsonMap.forEach((value, key) => {
+      mapping.set(parseInt(key), value);
+    });
+    console.log('Loaded mapping from file!');
+    console.log(mapping);
+    return mapping;
+  } catch (err) {
+    console.error('Could not find file');
+    return new Map<number, Quote>();
+  }
 }
 
 const container = new Container();
@@ -37,7 +64,8 @@ container
 container.bind<QuoteFormatter>(TYPES.BasicQuoteFormatter).to(BasicQuoteFormatter).inSingletonScope();
 container.bind<QuoteFormatter>(TYPES.BlameQuoteFormatter).to(BlameQuoteFormatter).inSingletonScope();
 
-container.bind<Map<number, Quote>>(TYPES.QuoteMapping).toConstantValue(new Map<number, Quote>());
+const quoteMapping: Map<number, Quote> = loadMappingFromFile(QUOTE_MAPPING_PATH);
+container.bind<Map<number, Quote>>(TYPES.QuoteMapping).toConstantValue(quoteMapping);
 
 container.bind<QuoteManager>(TYPES.QuoteManager).to(InMemoryQuoteManager).inSingletonScope();
 
@@ -52,5 +80,30 @@ const messageHandlers: MessageHandler[] = [
 container.bind<MessageHandler[]>(TYPES.MessageHandlers).toConstantValue(messageHandlers);
 
 container.bind<CompoundMessageHandler>(TYPES.MessageHandler).to(QuoteBotMessageHandler).inSingletonScope();
+
+[
+  'beforeExit',
+  'uncaughtException',
+  'unhandledRejection',
+  'SIGHUP',
+  'SIGINT',
+  'SIGQUIT',
+  'SIGILL',
+  'SIGTRAP',
+  'SIGABRT',
+  'SIGBUS',
+  'SIGFPE',
+  'SIGUSR1',
+  'SIGSEGV',
+  'SIGUSR2',
+  'SIGTERM',
+].forEach((event) =>
+  process.on(event, (evt) => {
+    flushJson(QUOTE_MAPPING_PATH, quoteMapping);
+    console.log('Flushed Json to file');
+    console.log(readFileSync(QUOTE_MAPPING_PATH, 'utf8'));
+    process.exit();
+  })
+);
 
 export default container;
