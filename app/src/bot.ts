@@ -1,7 +1,6 @@
 import { Client, Message } from 'discord.js';
 import { inject, injectable } from 'inversify';
 import { TYPES } from './types';
-import { MessageHandler } from './messages/message-handler';
 import { CompoundMessageHandler } from './messages/compound-message-handler';
 
 @injectable()
@@ -11,7 +10,7 @@ export class Bot {
   private readonly token: string;
 
   constructor(
-    @inject(TYPES.Client) client: Client,
+    @inject(TYPES.DiscordClient) client: Client,
     @inject(TYPES.Token) token: string,
     @inject(TYPES.MessageHandler) messageHandlers: CompoundMessageHandler
   ) {

@@ -29,7 +29,7 @@ function stringOrThrow(check: string | undefined, errorMessage: string): string 
 const container = new Container();
 
 container.bind<Bot>(TYPES.Bot).to(Bot).inSingletonScope();
-container.bind<Client>(TYPES.Client).toConstantValue(new Client());
+container.bind<Client>(TYPES.DiscordClient).toConstantValue(new Client());
 container.bind<string>(TYPES.Token).toConstantValue(stringOrThrow(process.env.TOKEN, 'Could not find TOKEN'));
 container
   .bind<string>(TYPES.Qualifier)
