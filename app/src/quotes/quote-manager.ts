@@ -19,7 +19,7 @@ export interface QuoteManager {
   getBySearch(search: string): Map<number, Quote>;
 
   /**
-   * @return {boolean} whether the add was successful or not
+   * @return {Promise<boolean>} whether the add was successful or not
    */
-  add(quote: Quote): boolean;
+  add(quote: Quote): Promise<boolean>;
 }

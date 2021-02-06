@@ -41,9 +41,9 @@ export class InMemoryQuoteManager implements QuoteManager {
     return quotesMap;
   }
 
-  add(quote: Quote): boolean {
+  add(quote: Quote): Promise<boolean> {
     this.quotes.set(this.quotes.size + 1, quote);
-    return true;
+    return Promise.resolve(true);
   }
 
   async getQuotesFromS3(path: string): Promise<void> {

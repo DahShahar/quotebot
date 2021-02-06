@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { DynamoDBClient, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, PutItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { CloudFormationClient, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
 
 import { Quote } from './quote';
@@ -31,9 +31,25 @@ export class DdbQuoteManager implements QuoteManager {
     return new Map<number, Quote>();
   }
 
-  add(): boolean {
-    this.numItems++;
-    return false;
+  add(quote: Quote): Promise<boolean> {
+    const putItemCommand = new PutItemCommand({
+      TableName: this.tableName,
+      Item: {
+        quoteIndex: { N: `${this.numItems}` },
+        Quote: { S: JSON.stringify(quote) },
+      },
+    });
+
+    return this.ddbClient
+      .send(putItemCommand)
+      .then(() => {
+        this.numItems++;
+        return true;
+      })
+      .catch((err) => {
+        console.error(err);
+        return false;
+      });
   }
 
   async determineNumberOfQuotes(): Promise<void> {

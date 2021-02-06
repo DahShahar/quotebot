@@ -15,7 +15,7 @@ export class QuoteBotStack extends cdk.Stack {
     const quoteBotTable = new Table(this, 'Quotes', {
       partitionKey: {
         name: 'quoteIndex',
-        type: AttributeType.STRING
+        type: AttributeType.NUMBER
       },
       billingMode: BillingMode.PROVISIONED,
       readCapacity: 5,
