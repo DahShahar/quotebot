@@ -21,5 +21,7 @@ export class QuoteBotStack extends cdk.Stack {
       readCapacity: 5,
       writeCapacity: 5,
     });
+
+    new cdk.CfnOutput(this, 'DynamoDBTable', { value: quoteBotTable.tableName });
   }
 }
