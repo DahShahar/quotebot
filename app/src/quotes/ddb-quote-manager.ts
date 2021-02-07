@@ -45,8 +45,30 @@ export class DdbQuoteManager implements QuoteManager {
     return undefined;
   }
 
-  getBySearch(): Promise<Map<number, Quote>> {
-    return Promise.resolve(new Map<number, Quote>());
+  async getBySearch(search: string): Promise<Map<number, Quote>> {
+    const quotesMap = new Map<number, Quote>();
+    const scanCommand = new ScanCommand({
+      TableName: this.tableName,
+    });
+    const scanResult = await this.ddbClient.send(scanCommand);
+    if (scanResult.Items) {
+      for (const item of scanResult.Items) {
+        if (item.quoteIndex.N && item.Quote.S) {
+          const quoteIndex = parseInt(item.quoteIndex.N);
+          const quote = JSON.parse(item.Quote.S) as Quote;
+          if (!this.isQuote(quote)) {
+            continue;
+          }
+          if (
+            quote.quote.toLowerCase().includes(search.toLowerCase()) ||
+            quote.author.toLowerCase() === search.toLowerCase()
+          ) {
+            quotesMap.set(quoteIndex, quote);
+          }
+        }
+      }
+    }
+    return Promise.resolve(quotesMap);
   }
 
   add(quote: Quote): Promise<boolean> {
