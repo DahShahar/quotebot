@@ -4,13 +4,13 @@ export interface QuoteManager {
   /**
    * @return {Quote | undefined} a random quote if there is any, or undefined if there are none.
    */
-  get(): Quote | undefined;
+  get(): Promise<Quote | undefined>;
 
   /**
    * @param {number} the Nth quote to get, 1-indexed
    * @return {Quote | undefined} the Nth quote, 1-indexed, unless that quote does not exist
    */
-  getByIndex(num: number): Quote | undefined;
+  getByIndex(num: number): Promise<Quote | undefined>;
 
   /**
    * @param {string} the string to search for

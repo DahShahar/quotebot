@@ -26,9 +26,9 @@ export class BlameQuoteHandler implements MessageHandler {
     return `${this.getIdentifier()} [number]: prints who added the [number]th quote`;
   }
 
-  handle(message: Message): Promise<Message | Message[]> {
+  async handle(message: Message): Promise<Message | Message[]> {
     if (this.checkInt(message.content) === true) {
-      const quote = this.quoteManager.getByIndex(parseInt(message.content));
+      const quote = await this.quoteManager.getByIndex(parseInt(message.content));
       if (quote !== undefined) {
         return message.channel.send(this.quoteFormatter.formatQuote(quote));
       }

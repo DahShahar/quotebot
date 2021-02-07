@@ -26,13 +26,13 @@ export class GetQuoteHandler implements MessageHandler {
     return `${this.getIdentifier()} [number?] [word?] : if you provide nothing, returns a random quote. If you provide a number, it'll provide the corresponding quote. If you provide a word, we'll search for the best quote that matches`;
   }
 
-  handle(message: Message): Promise<Message | Message[] | MessageReaction> {
+  async handle(message: Message): Promise<Message | Message[] | MessageReaction> {
     let quote;
     const content = message.content;
     if (message.content.trim() === '') {
-      quote = this.quoteManager.get();
+      quote = await this.quoteManager.get();
     } else if (this.checkInt(content) === true) {
-      quote = this.quoteManager.getByIndex(parseInt(content));
+      quote = await this.quoteManager.getByIndex(parseInt(content));
     }
 
     // try to match against the word

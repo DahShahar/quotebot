@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { DynamoDBClient, PutItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { DynamoDBClient, GetItemCommand, PutItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { CloudFormationClient, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
 
 import { Quote } from './quote';
@@ -18,12 +18,30 @@ export class DdbQuoteManager implements QuoteManager {
     this.tableName = '';
   }
 
-  get(): Quote | undefined {
-    return undefined;
+  get(): Promise<Quote | undefined> {
+    const quoteNumber = 1 + Math.floor(Math.random() * this.numItems);
+    return this.getByIndex(quoteNumber);
   }
 
-  getByIndex(index: number): Quote | undefined {
-    index++; // not used yet
+  async getByIndex(index: number): Promise<Quote | undefined> {
+    const getItemCommand = new GetItemCommand({
+      TableName: this.tableName,
+      Key: {
+        quoteIndex: { N: `${index}` },
+      },
+    });
+    const getItemResult = await this.ddbClient.send(getItemCommand);
+    if (getItemResult && getItemResult.Item && getItemResult.Item.Quote && getItemResult.Item.Quote.S) {
+      const quoteString = getItemResult.Item.Quote.S;
+      const jsonParsed = JSON.parse(quoteString) as Quote;
+      if (this.isQuote(jsonParsed)) {
+        return jsonParsed;
+      } else {
+        console.error('Parsed JSON was not a Quote');
+        console.error(jsonParsed);
+        return undefined;
+      }
+    }
     return undefined;
   }
 
@@ -35,7 +53,7 @@ export class DdbQuoteManager implements QuoteManager {
     const putItemCommand = new PutItemCommand({
       TableName: this.tableName,
       Item: {
-        quoteIndex: { N: `${this.numItems}` },
+        quoteIndex: { N: `${this.numItems + 1}` },
         Quote: { S: JSON.stringify(quote) },
       },
     });
@@ -81,5 +99,9 @@ export class DdbQuoteManager implements QuoteManager {
       }
     }
     throw new Error('Could not determine table name');
+  }
+
+  isQuote(obj: Quote): obj is Quote {
+    return obj.quote.trim().length !== 0 && obj.author.trim().length !== 0 && obj.blamer.trim().length !== 0;
   }
 }

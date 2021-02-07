@@ -4,13 +4,14 @@ import { Quote } from '../../src/quotes/quote';
 import { QuoteFormatter } from '../../src/quotes/quote-formatter';
 import { QuoteManager } from '../../src/quotes/quote-manager';
 import { TestContext } from '../utils/test-context';
+import { resolvableInstance } from '../utils/resolvableInstance';
 import { BlameQuoteHandler } from '../../src/messages/blame-quote-handler';
 import { anything, instance, mock, verify, when } from 'ts-mockito';
 
-describe('GetQuoteHandler', () => {
+describe('BlameQuoteHandler', () => {
   const quoteClass = mock<Quote>();
 
-  const quote = instance(quoteClass);
+  const quote = resolvableInstance(quoteClass);
   quote.quote = 'yo';
   quote.blamer = 'me';
 
@@ -26,8 +27,8 @@ describe('GetQuoteHandler', () => {
 
   beforeEach(() => {
     mockedQuoteManagerClass = mock<QuoteManager>();
-    when(mockedQuoteManagerClass.getByIndex(3)).thenReturn(quote);
-    mockedQuoteManagerInstance = instance(mockedQuoteManagerClass);
+    when(mockedQuoteManagerClass.getByIndex(3)).thenResolve(quote);
+    mockedQuoteManagerInstance = resolvableInstance(mockedQuoteManagerClass);
 
     mockedQuoteFormatterClass = mock<QuoteFormatter>();
     when(mockedQuoteFormatterClass.formatQuote(anything())).thenCall((arg1: Quote) => {

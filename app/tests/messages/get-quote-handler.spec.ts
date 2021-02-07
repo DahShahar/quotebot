@@ -5,6 +5,7 @@ import { QuoteFormatter } from '../../src/quotes/quote-formatter';
 import { QuoteManager } from '../../src/quotes/quote-manager';
 import { TestContext } from '../utils/test-context';
 import { GetQuoteHandler } from '../../src/messages/get-quote-handler';
+import { resolvableInstance } from '../utils/resolvableInstance';
 import { anything, instance, mock, verify, when } from 'ts-mockito';
 
 describe('GetQuoteHandler', () => {
@@ -12,11 +13,11 @@ describe('GetQuoteHandler', () => {
   const thirdQuoteClass = mock<Quote>();
   const wordQuoteClass = mock<Quote>();
 
-  const quote = instance(quoteClass);
+  const quote = resolvableInstance(quoteClass);
   quote.quote = 'yo';
-  const thirdQuote = instance(thirdQuoteClass);
+  const thirdQuote = resolvableInstance(thirdQuoteClass);
   thirdQuote.quote = 'hi';
-  const wordQuote = instance(wordQuoteClass);
+  const wordQuote = resolvableInstance(wordQuoteClass);
   wordQuote.quote = 'word word';
 
   let mockedQuoteFormatterClass: QuoteFormatter;
@@ -31,8 +32,8 @@ describe('GetQuoteHandler', () => {
 
   beforeEach(() => {
     mockedQuoteManagerClass = mock<QuoteManager>();
-    when(mockedQuoteManagerClass.get()).thenReturn(quote);
-    when(mockedQuoteManagerClass.getByIndex(3)).thenReturn(thirdQuote);
+    when(mockedQuoteManagerClass.get()).thenResolve(quote);
+    when(mockedQuoteManagerClass.getByIndex(3)).thenResolve(thirdQuote);
     const quoteMap = new Map<number, Quote>();
     quoteMap.set(5, wordQuote);
     when(mockedQuoteManagerClass.getBySearch('word')).thenReturn(quoteMap);

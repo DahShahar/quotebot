@@ -18,14 +18,13 @@ export class InMemoryQuoteManager implements QuoteManager {
     this.s3Client = new S3Client({});
   }
 
-  get(): Quote | undefined {
+  get(): Promise<Quote | undefined> {
     const quoteNumber = 1 + Math.floor(Math.random() * this.quotes.size);
-    const randomQuote = this.quotes.get(quoteNumber);
-    return randomQuote;
+    return this.getByIndex(quoteNumber);
   }
 
-  getByIndex(num: number): Quote | undefined {
-    return this.quotes.get(num);
+  getByIndex(num: number): Promise<Quote | undefined> {
+    return Promise.resolve(this.quotes.get(num));
   }
 
   getBySearch(search: string): Map<number, Quote> {
