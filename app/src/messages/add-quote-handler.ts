@@ -41,7 +41,9 @@ export class AddQuoteHandler implements MessageHandler {
           .withAuthor(originalMessage.author.username)
           .build();
 
-        this.quoteManager.add(quote);
+        this.quoteManager.add(quote).catch((err) => {
+          console.error(err);
+        });
         return message.react('👍');
       }
     );

@@ -39,7 +39,9 @@ export class QuoteItHandler implements MessageHandler {
         .withBlamer(message.author.username)
         .build();
 
-      this.quoteManager.add(quote);
+      this.quoteManager.add(quote).catch((err) => {
+        console.error(err);
+      });
       return message.react('👍');
     });
   }

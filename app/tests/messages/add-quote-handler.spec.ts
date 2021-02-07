@@ -4,7 +4,7 @@ import { TestContext } from '../utils/test-context';
 import { QuoteManager } from '../../src/quotes/quote-manager';
 import { AddQuoteHandler } from '../../src/messages/add-quote-handler';
 import { expect } from 'chai';
-import { anything, capture, instance, mock, verify } from 'ts-mockito';
+import { anything, capture, instance, mock, verify, when } from 'ts-mockito';
 
 describe('AddQuoteHandler', () => {
   let testContext: TestContext;
@@ -16,6 +16,7 @@ describe('AddQuoteHandler', () => {
 
   beforeEach(() => {
     mockedQuoteManagerClass = mock<QuoteManager>();
+    when(mockedQuoteManagerClass.add(anything())).thenResolve(true);
     mockedQuoteManagerInstance = instance(mockedQuoteManagerClass);
 
     testContext = new TestContext();
