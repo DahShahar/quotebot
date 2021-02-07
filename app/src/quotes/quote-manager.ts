@@ -16,7 +16,7 @@ export interface QuoteManager {
    * @param {string} the string to search for
    * @return {Map<number, Quote>} the quotes matching the string, can be empty
    */
-  getBySearch(search: string): Map<number, Quote>;
+  getBySearch(search: string): Promise<Map<number, Quote>>;
 
   /**
    * @return {Promise<boolean>} whether the add was successful or not

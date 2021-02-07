@@ -45,8 +45,8 @@ export class DdbQuoteManager implements QuoteManager {
     return undefined;
   }
 
-  getBySearch(): Map<number, Quote> {
-    return new Map<number, Quote>();
+  getBySearch(): Promise<Map<number, Quote>> {
+    return Promise.resolve(new Map<number, Quote>());
   }
 
   add(quote: Quote): Promise<boolean> {

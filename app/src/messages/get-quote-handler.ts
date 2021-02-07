@@ -37,7 +37,7 @@ export class GetQuoteHandler implements MessageHandler {
 
     // try to match against the word
     if (quote === undefined) {
-      const quoteMap = this.quoteManager.getBySearch(content);
+      const quoteMap = await this.quoteManager.getBySearch(content);
       for (const entry of quoteMap.entries()) {
         const [, value] = entry;
         if (quote === undefined) {

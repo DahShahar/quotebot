@@ -36,7 +36,7 @@ describe('GetQuoteHandler', () => {
     when(mockedQuoteManagerClass.getByIndex(3)).thenResolve(thirdQuote);
     const quoteMap = new Map<number, Quote>();
     quoteMap.set(5, wordQuote);
-    when(mockedQuoteManagerClass.getBySearch('word')).thenReturn(quoteMap);
+    when(mockedQuoteManagerClass.getBySearch('word')).thenResolve(quoteMap);
     mockedQuoteManagerInstance = instance(mockedQuoteManagerClass);
 
     mockedQuoteFormatterClass = mock<QuoteFormatter>();

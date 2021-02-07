@@ -27,7 +27,7 @@ export class InMemoryQuoteManager implements QuoteManager {
     return Promise.resolve(this.quotes.get(num));
   }
 
-  getBySearch(search: string): Map<number, Quote> {
+  getBySearch(search: string): Promise<Map<number, Quote>> {
     const quotesMap: Map<number, Quote> = new Map<number, Quote>();
     this.quotes.forEach((value, key) => {
       if (
@@ -37,7 +37,7 @@ export class InMemoryQuoteManager implements QuoteManager {
         quotesMap.set(key, value);
       }
     });
-    return quotesMap;
+    return Promise.resolve(quotesMap);
   }
 
   add(quote: Quote): Promise<boolean> {
