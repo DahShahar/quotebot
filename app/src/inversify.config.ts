@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import { Container } from 'inversify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { SSMClient } from '@aws-sdk/client-ssm';
 
 import { TYPES } from './types';
 import { Bot } from './bot';
@@ -38,9 +39,12 @@ const container = new Container();
 
 const cfnClient = new CloudFormationClient({});
 
-container.bind<Bot>(TYPES.Bot).to(Bot).inSingletonScope();
 container.bind<Client>(TYPES.DiscordClient).toConstantValue(new Client());
-container.bind<string>(TYPES.Token).toConstantValue(stringOrThrow(process.env.TOKEN, 'Could not find TOKEN'));
+
+if (process.env.TOKEN) {
+  container.bind<string>(TYPES.Token).toConstantValue(process.env.TOKEN);
+}
+
 container
   .bind<string>(TYPES.Qualifier)
   .toConstantValue(stringOrThrow(process.env.QUALIFIER, 'Could not find QUALIFIER'));
@@ -82,5 +86,16 @@ const messageHandlers: MessageHandler[] = [
 container.bind<MessageHandler[]>(TYPES.MessageHandlers).toConstantValue(messageHandlers);
 
 container.bind<CompoundMessageHandler>(TYPES.MessageHandler).to(QuoteBotMessageHandler).inSingletonScope();
+
+let token: string | undefined;
+try {
+  token = container.get(TYPES.Token);
+} catch (err) {
+  token = undefined;
+}
+
+const bot = new Bot(container.get(TYPES.DiscordClient), container.get(TYPES.MessageHandler), token);
+
+container.bind<Bot>(TYPES.Bot).toConstantValue(bot);
 
 export default container;

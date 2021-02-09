@@ -1,9 +1,10 @@
 import * as cdk from '@aws-cdk/core';
-import { LazyRole, ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Effect, LazyRole, PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { InstanceType } from '@aws-cdk/aws-ec2';
 import { Cluster, ContainerDefinition, ContainerImage, Ec2TaskDefinition, MachineImageType } from '@aws-cdk/aws-ecs';
 import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 import { Bucket, BlockPublicAccess } from '@aws-cdk/aws-s3';
+import * as ssm from '@aws-cdk/aws-ssm';
 import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
 
 export class QuoteBotStack extends cdk.Stack {
@@ -11,10 +12,13 @@ export class QuoteBotStack extends cdk.Stack {
     super(scope, id, props);
 
     const quoteBotRole = new LazyRole(this, 'QuoteBotRole', {
-      assumedBy: new ServicePrincipal('ec2.amazonaws.com', {}),
+      assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com', {}),
     });
+    const quoteBotToken = ssm.StringParameter.fromStringParameterAttributes(this, 'QuoteBotParam', {
+      parameterName: '/quoteBot/token',
+    });
+    quoteBotToken.grantRead(quoteBotRole);
 
-    // The code that defines your stack goes here
     const quoteBotBucket = new Bucket(this, 'QuoteBucketBackup', {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
     });
@@ -54,12 +58,15 @@ export class QuoteBotStack extends cdk.Stack {
       taskRole: quoteBotRole,
     });
 
-    const containerImage = ContainerImage.fromEcrRepository(quoteBotImage.repository, quoteBotImage.imageUri.split(":").pop());
+    const containerImage = ContainerImage.fromEcrRepository(quoteBotImage.repository, quoteBotImage.imageUri.split(':').pop());
 
     const containerDefinition = new ContainerDefinition(this, 'QuoteBotContainer', {
       taskDefinition: taskDefinition,
       image: containerImage,
       memoryReservationMiB: 300,
+      environment: {
+        ['qualifier']: '!'
+      }
     });
   }
 }

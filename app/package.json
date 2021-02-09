@@ -25,6 +25,7 @@
     "@aws-sdk/client-cloudformation": "^3.4.1",
     "@aws-sdk/client-dynamodb": "^3.4.1",
     "@aws-sdk/client-s3": "^3.4.1",
+    "@aws-sdk/client-ssm": "^3.4.1",
     "@types/node": "^14.14.21",
     "discord.js": "^12.5.1",
     "dotenv": "^8.2.0",
