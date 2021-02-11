@@ -105,6 +105,7 @@ let token: string | undefined;
 try {
   token = container.get(TYPES.Token);
 } catch (err) {
+  console.warn('Could not get Token from environment, will try to pull from SSM');
   token = undefined;
 }
 
