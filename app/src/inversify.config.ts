@@ -53,10 +53,24 @@ container.bind<QuoteFormatter>(TYPES.BasicQuoteFormatter).to(BasicQuoteFormatter
 container.bind<QuoteFormatter>(TYPES.BlameQuoteFormatter).to(BlameQuoteFormatter).inSingletonScope();
 
 if (useInMemoryQuoteManager()) {
-  const quoteManager = new InMemoryQuoteManager();
-  quoteManager.getQuotesFromS3(QUOTE_MAPPING_PATH).catch(() => {
-    console.error('Failed to get quotes from S3');
-  });
+  let quoteManager: InMemoryQuoteManager;
+  if (process.env.BUCKET_NAME) {
+    quoteManager = new InMemoryQuoteManager(undefined, process.env.BUCKET_NAME);
+  } else {
+    quoteManager = new InMemoryQuoteManager();
+    quoteManager
+      .getBucketName(cfnClient)
+      .then(() => {
+        quoteManager.getQuotesFromS3(QUOTE_MAPPING_PATH).catch((err) => {
+          console.error('Failed to get quotes from S3');
+          throw err;
+        });
+      })
+      .catch((err) => {
+        console.error('Failed to initialize quote manager');
+        throw err;
+      });
+  }
   quoteManager.addExitHook(QUOTE_MAPPING_PATH);
   container.bind<QuoteManager>(TYPES.QuoteManager).toConstantValue(quoteManager);
 } else {

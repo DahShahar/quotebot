@@ -1,4 +1,5 @@
 import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
+import { CloudFormationClient, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
 import { QuoteManager } from './quote-manager';
 import { Quote } from './quote';
 import { TYPES } from '../types';
@@ -8,14 +9,16 @@ import { inject, injectable } from 'inversify';
 export class InMemoryQuoteManager implements QuoteManager {
   private quotes: Map<number, Quote>;
   private s3Client: S3Client;
+  private bucketName: string;
 
-  constructor(@inject(TYPES.QuoteMapping) quotes?: Map<number, Quote>) {
+  constructor(@inject(TYPES.QuoteMapping) quotes?: Map<number, Quote>, bucketName?: string) {
     if (quotes) {
       this.quotes = quotes;
     } else {
       this.quotes = new Map<number, Quote>();
     }
     this.s3Client = new S3Client({});
+    this.bucketName = bucketName || '';
   }
 
   get(): Promise<Quote | undefined> {
@@ -45,10 +48,33 @@ export class InMemoryQuoteManager implements QuoteManager {
     return Promise.resolve(true);
   }
 
+  async getBucketName(cfn: CloudFormationClient): Promise<void> {
+    const describeStacksCommand = new DescribeStacksCommand({ StackName: 'QuoteBotStack' });
+    const describeStacksOutput = await cfn.send(describeStacksCommand);
+    const stacks = describeStacksOutput.Stacks;
+    if (stacks && stacks.length === 1) {
+      const stack = stacks[0];
+      if (stack && stack.Outputs) {
+        const bucketOutput = stack.Outputs.find((elem) => elem.OutputKey === 'S3Bucket');
+        if (bucketOutput && bucketOutput.OutputValue) {
+          this.bucketName = bucketOutput.OutputValue;
+          return;
+        }
+      }
+    }
+    throw new Error('Could not determine bucket name');
+  }
+
   async getQuotesFromS3(path: string): Promise<void> {
+    if (!this.bucketName) {
+      console.warn('No bucket to grab from found');
+      this.quotes = new Map<number, Quote>();
+      return;
+    }
+
     try {
       const getObjectCommand = new GetObjectCommand({
-        Bucket: process.env.BUCKET_NAME,
+        Bucket: this.bucketName,
         Key: path,
       });
       const getObjectResult = await this.s3Client.send(getObjectCommand);
@@ -72,9 +98,14 @@ export class InMemoryQuoteManager implements QuoteManager {
   }
 
   async flushJson(path: string): Promise<void> {
+    if (!this.bucketName) {
+      console.warn('No bucket name to flush to found');
+      return;
+    }
+
     try {
       const putObjectCommand = new PutObjectCommand({
-        Bucket: process.env.BUCKET_NAME,
+        Bucket: this.bucketName,
         Key: path,
         Body: JSON.stringify(Object.fromEntries(this.quotes)),
       });
