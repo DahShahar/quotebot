@@ -86,7 +86,7 @@ export class QuoteBotStack extends cdk.Stack {
       image: containerImage,
       memoryReservationMiB: 300,
       environment: {
-        ['QUALIFIER']: '!',
+        ['QUALIFIER']: '-',
         ['AWS_REGION']: this.region,
       },
       logging: ecs.LogDriver.awsLogs({
