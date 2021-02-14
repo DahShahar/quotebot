@@ -1,5 +1,5 @@
-import { Quote } from './quote';
+import { IndexedQuote } from './indexed-quote';
 
 export interface QuoteFormatter {
-  formatQuote(quote: Quote): string;
+  formatQuote(quote: IndexedQuote): string;
 }

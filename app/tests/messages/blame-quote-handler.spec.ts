@@ -1,19 +1,23 @@
 import 'reflect-metadata';
 import 'mocha';
-import { Quote } from '../../src/quotes/quote';
-import { QuoteFormatter } from '../../src/quotes/quote-formatter';
-import { QuoteManager } from '../../src/quotes/quote-manager';
+import { anything, instance, mock, verify, when } from 'ts-mockito';
+
 import { TestContext } from '../utils/test-context';
 import { resolvableInstance } from '../utils/resolvableInstance';
+import { IndexedQuote, Quote, QuoteFormatter, QuoteManager } from '../../src/quotes';
 import { BlameQuoteHandler } from '../../src/messages/blame-quote-handler';
-import { anything, instance, mock, verify, when } from 'ts-mockito';
 
 describe('BlameQuoteHandler', () => {
   const quoteClass = mock<Quote>();
 
-  const quote = resolvableInstance(quoteClass);
-  quote.quote = 'yo';
-  quote.blamer = 'me';
+  const embeddedQuote = resolvableInstance(quoteClass);
+  embeddedQuote.quote = 'yo';
+  embeddedQuote.blamer = 'me';
+
+  const indexedQuoteClass = mock<IndexedQuote>();
+  const indexedQuote = resolvableInstance(indexedQuoteClass);
+  indexedQuote.quote = embeddedQuote;
+  indexedQuote.index = 1;
 
   let mockedQuoteFormatterClass: QuoteFormatter;
   let mockedQuoteFormatterInstance: QuoteFormatter;
@@ -27,12 +31,12 @@ describe('BlameQuoteHandler', () => {
 
   beforeEach(() => {
     mockedQuoteManagerClass = mock<QuoteManager>();
-    when(mockedQuoteManagerClass.getByIndex(3)).thenResolve(quote);
+    when(mockedQuoteManagerClass.getByIndex(3)).thenResolve(indexedQuote);
     mockedQuoteManagerInstance = resolvableInstance(mockedQuoteManagerClass);
 
     mockedQuoteFormatterClass = mock<QuoteFormatter>();
-    when(mockedQuoteFormatterClass.formatQuote(anything())).thenCall((arg1: Quote) => {
-      return arg1.blamer;
+    when(mockedQuoteFormatterClass.formatQuote(anything())).thenCall((arg1: IndexedQuote) => {
+      return arg1.quote.blamer;
     });
     mockedQuoteFormatterInstance = instance(mockedQuoteFormatterClass);
 
@@ -52,6 +56,6 @@ describe('BlameQuoteHandler', () => {
     testContext.originalMockedMessageInstance.content = '3';
     await blameQuoteHandler.handle(testContext.originalMockedMessageInstance);
 
-    verify(testContext.mockedChannelClass.send(quote.blamer));
+    verify(testContext.mockedChannelClass.send(embeddedQuote.blamer));
   });
 });

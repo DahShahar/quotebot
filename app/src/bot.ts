@@ -46,6 +46,8 @@ export class Bot {
   }
 
   private handleMessage(message: Message): void {
-    void this.messageHandlers.handleMessage(message);
+    this.messageHandlers.handleMessage(message).catch(() => {
+      // Do nothing
+    });
   }
 }

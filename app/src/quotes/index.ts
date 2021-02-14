@@ -1,4 +1,5 @@
 export * from './quote';
+export * from './indexed-quote';
 export * from './quote-builder';
 export * from './quote-formatter';
 export * from './basic-quote-formatter';

@@ -26,21 +26,20 @@ export class GetQuoteHandler implements MessageHandler {
   }
 
   async handle(message: Message): Promise<Message | Message[] | MessageReaction> {
-    let quote;
+    let quote = undefined;
     const content = message.content;
     if (message.content.trim() === '') {
       quote = await this.quoteManager.get();
-    } else if (this.checkInt(content) === true) {
+    } else if (this.checkInt(content)) {
       quote = await this.quoteManager.getByIndex(parseInt(content));
     }
 
     // try to match against the word
     if (quote === undefined) {
-      const quoteMap = await this.quoteManager.getBySearch(content);
-      for (const entry of quoteMap.entries()) {
-        const [, value] = entry;
+      const quoteList = await this.quoteManager.getBySearch(content);
+      for (const entry of quoteList) {
         if (quote === undefined) {
-          quote = value;
+          quote = entry;
         }
       }
     }

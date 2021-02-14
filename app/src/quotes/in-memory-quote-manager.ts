@@ -1,6 +1,7 @@
 import { S3Client, GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 import { CloudFormationClient, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
 import { QuoteManager } from './quote-manager';
+import { IndexedQuote } from './indexed-quote';
 import { Quote } from './quote';
 import { TYPES } from '../types';
 import { inject, injectable } from 'inversify';
@@ -21,26 +22,37 @@ export class InMemoryQuoteManager implements QuoteManager {
     this.bucketName = bucketName || '';
   }
 
-  get(): Promise<Quote | undefined> {
+  get(): Promise<IndexedQuote | undefined> {
     const quoteNumber = 1 + Math.floor(Math.random() * this.quotes.size);
     return this.getByIndex(quoteNumber);
   }
 
-  getByIndex(num: number): Promise<Quote | undefined> {
-    return Promise.resolve(this.quotes.get(num));
+  getByIndex(num: number): Promise<IndexedQuote | undefined> {
+    const quote = this.quotes.get(num);
+    if (quote) {
+      return Promise.resolve({
+        quote,
+        index: num,
+      });
+    } else {
+      return Promise.resolve(undefined);
+    }
   }
 
-  getBySearch(search: string): Promise<Map<number, Quote>> {
-    const quotesMap: Map<number, Quote> = new Map<number, Quote>();
+  getBySearch(search: string): Promise<IndexedQuote[]> {
+    const quotesList: IndexedQuote[] = [];
     this.quotes.forEach((value, key) => {
       if (
         value.quote.toLowerCase().includes(search.toLowerCase()) ||
         value.author.toLowerCase() === search.toLowerCase()
       ) {
-        quotesMap.set(key, value);
+        quotesList.push({
+          index: key,
+          quote: value,
+        });
       }
     });
-    return Promise.resolve(quotesMap);
+    return Promise.resolve(quotesList);
   }
 
   add(quote: Quote): Promise<boolean> {

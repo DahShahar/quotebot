@@ -2,6 +2,7 @@ import { inject, injectable } from 'inversify';
 import { DynamoDBClient, GetItemCommand, PutItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { CloudFormationClient, DescribeStacksCommand } from '@aws-sdk/client-cloudformation';
 
+import { IndexedQuote } from './indexed-quote';
 import { Quote } from './quote';
 import { QuoteManager } from './quote-manager';
 import { TYPES } from '../types';
@@ -18,12 +19,12 @@ export class DdbQuoteManager implements QuoteManager {
     this.tableName = '';
   }
 
-  get(): Promise<Quote | undefined> {
+  get(): Promise<IndexedQuote | undefined> {
     const quoteNumber = 1 + Math.floor(Math.random() * this.numItems);
     return this.getByIndex(quoteNumber);
   }
 
-  async getByIndex(index: number): Promise<Quote | undefined> {
+  async getByIndex(index: number): Promise<IndexedQuote | undefined> {
     const getItemCommand = new GetItemCommand({
       TableName: this.tableName,
       Key: {
@@ -31,11 +32,21 @@ export class DdbQuoteManager implements QuoteManager {
       },
     });
     const getItemResult = await this.ddbClient.send(getItemCommand);
-    if (getItemResult && getItemResult.Item && getItemResult.Item.Quote && getItemResult.Item.Quote.S) {
+    if (
+      getItemResult &&
+      getItemResult.Item &&
+      getItemResult.Item.Quote &&
+      getItemResult.Item.Quote.S &&
+      getItemResult.Item.quoteIndex &&
+      getItemResult.Item.quoteIndex.N
+    ) {
       const quoteString = getItemResult.Item.Quote.S;
       const jsonParsed = JSON.parse(quoteString) as Quote;
       if (this.isQuote(jsonParsed)) {
-        return jsonParsed;
+        return {
+          quote: jsonParsed,
+          index,
+        };
       } else {
         console.error('Parsed JSON was not a Quote');
         console.error(jsonParsed);
@@ -45,8 +56,8 @@ export class DdbQuoteManager implements QuoteManager {
     return undefined;
   }
 
-  async getBySearch(search: string): Promise<Map<number, Quote>> {
-    const quotesMap = new Map<number, Quote>();
+  async getBySearch(search: string): Promise<IndexedQuote[]> {
+    const quotesList: IndexedQuote[] = [];
     const scanCommand = new ScanCommand({
       TableName: this.tableName,
     });
@@ -63,12 +74,15 @@ export class DdbQuoteManager implements QuoteManager {
             quote.quote.toLowerCase().includes(search.toLowerCase()) ||
             quote.author.toLowerCase() === search.toLowerCase()
           ) {
-            quotesMap.set(quoteIndex, quote);
+            quotesList.push({
+              index: quoteIndex,
+              quote,
+            });
           }
         }
       }
     }
-    return Promise.resolve(quotesMap);
+    return Promise.resolve(quotesList);
   }
 
   add(quote: Quote): Promise<boolean> {
