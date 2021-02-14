@@ -2,7 +2,7 @@ import { GetParameterCommand, SSMClient } from '@aws-sdk/client-ssm';
 import { Client, Message } from 'discord.js';
 import { inject, injectable } from 'inversify';
 import { TYPES } from './types';
-import { CompoundMessageHandler } from './messages/compound-message-handler';
+import { CompoundMessageHandler } from './messages';
 
 @injectable()
 export class Bot {

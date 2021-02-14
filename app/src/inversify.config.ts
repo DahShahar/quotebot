@@ -7,14 +7,16 @@ import { SSMClient } from '@aws-sdk/client-ssm';
 
 import { TYPES } from './types';
 import { Bot } from './bot';
-import { MessageHandler } from './messages/message-handler';
-import { EchoHandler } from './messages/echo-handler';
-import { AddQuoteHandler } from './messages/add-quote-handler';
-import { BlameQuoteHandler } from './messages/blame-quote-handler';
-import { GetQuoteHandler } from './messages/get-quote-handler';
-import { QuoteItHandler } from './messages/quote-it-handler';
-import { CompoundMessageHandler } from './messages/compound-message-handler';
-import { QuoteBotMessageHandler } from './messages/quote-bot-message-handler';
+import {
+  MessageHandler,
+  EchoHandler,
+  AddQuoteHandler,
+  BlameQuoteHandler,
+  GetQuoteHandler,
+  QuoteItHandler,
+  CompoundMessageHandler,
+  QuoteBotMessageHandler,
+} from './messages';
 import {
   QuoteManager,
   InMemoryQuoteManager,
