@@ -89,7 +89,6 @@ export class InMemoryQuoteManager implements QuoteManager {
         mapping.set(parseInt(key), value);
       });
       console.log('Loaded mapping from file!');
-      console.log(mapping);
       this.quotes = mapping;
     } catch (err) {
       console.error(err);

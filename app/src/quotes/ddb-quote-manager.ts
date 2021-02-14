@@ -103,7 +103,6 @@ export class DdbQuoteManager implements QuoteManager {
     } else {
       throw new Error('Could not determine item count');
     }
-    console.log(this.numItems);
   }
 
   async determineTableName(cfn: CloudFormationClient): Promise<void> {

@@ -37,6 +37,8 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
       return Promise.reject();
     }
 
+    console.log('Handling message:', message.content);
+
     // as part of checking if we should ignore this message,
     // we verified it started with the qualifier
     message.content = message.content.substring(this.qualifier.length);

@@ -3,7 +3,6 @@ import 'reflect-metadata';
 import { Container } from 'inversify';
 import { CloudFormationClient } from '@aws-sdk/client-cloudformation';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { SSMClient } from '@aws-sdk/client-ssm';
 
 import { TYPES } from './types';
 import { Bot } from './bot';

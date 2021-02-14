@@ -23,12 +23,12 @@ export class QuoteItHandler implements MessageHandler {
   handle(message: Message): Promise<Message | Message[] | MessageReaction> {
     const repliedToReference = message.reference;
     if (repliedToReference === null || typeof repliedToReference === 'undefined') {
-      return Promise.reject();
+      return message.react('👎');
     }
 
     const repliedToMessageId = repliedToReference.messageID;
     if (repliedToMessageId === null || typeof repliedToMessageId === 'undefined') {
-      return Promise.reject();
+      return message.react('👎');
     }
 
     return message.channel.messages.fetch(repliedToMessageId).then((repliedToMessage) => {

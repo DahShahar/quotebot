@@ -34,7 +34,7 @@ export class Bot {
     return this.client.login(this.token);
   }
 
-  async getToken(ssmClient: SSMClient) {
+  async getToken(ssmClient: SSMClient): Promise<void> {
     const getParamCommand = new GetParameterCommand({
       Name: '/quoteBot/token',
     });
@@ -46,13 +46,6 @@ export class Bot {
   }
 
   private handleMessage(message: Message): void {
-    this.messageHandlers
-      .handleMessage(message)
-      .then(() => {
-        console.log('Handled!');
-      })
-      .catch(() => {
-        console.log('Not handled :(');
-      });
+    void this.messageHandlers.handleMessage(message);
   }
 }

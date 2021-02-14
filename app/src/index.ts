@@ -10,5 +10,5 @@ bot
     console.log('Logged in!');
   })
   .catch((error) => {
-    console.log('Oh no! ', error);
+    console.error(error);
   });
