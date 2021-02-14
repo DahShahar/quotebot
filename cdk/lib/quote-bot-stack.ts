@@ -1,36 +1,51 @@
 import * as cdk from '@aws-cdk/core';
-import { Effect, LazyRole, PolicyStatement, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { InstanceType } from '@aws-cdk/aws-ec2';
-import { Cluster, ContainerDefinition, ContainerImage, Ec2TaskDefinition, MachineImageType } from '@aws-cdk/aws-ecs';
-import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
-import { Bucket, BlockPublicAccess } from '@aws-cdk/aws-s3';
+import * as iam from '@aws-cdk/aws-iam';
+import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ecs from '@aws-cdk/aws-ecs';
+import * as s3 from '@aws-cdk/aws-s3';
 import * as ssm from '@aws-cdk/aws-ssm';
-import { AttributeType, BillingMode, Table } from '@aws-cdk/aws-dynamodb';
+import * as ddb from '@aws-cdk/aws-dynamodb';
+
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 
 export class QuoteBotStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const quoteBotRole = new LazyRole(this, 'QuoteBotRole', {
-      assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com', {}),
+    const quoteBotRole = new iam.LazyRole(this, 'QuoteBotRole', {
+      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com', {}),
     });
+
+    const quoteBotPolicies = new iam.PolicyDocument();
+    const readCfnPolicy = new iam.PolicyStatement();
+    readCfnPolicy.addActions('cloudformation:DescribeStacks');
+    readCfnPolicy.addResources(this.stackId);
+    quoteBotPolicies.addStatements(readCfnPolicy);
+
+    quoteBotRole.attachInlinePolicy(
+      new iam.Policy(this, 'QuoteBotPolicy', {
+        document: quoteBotPolicies
+      })
+    );
+
     const quoteBotToken = ssm.StringParameter.fromStringParameterAttributes(this, 'QuoteBotParam', {
       parameterName: '/quoteBot/token',
     });
     quoteBotToken.grantRead(quoteBotRole);
 
-    const quoteBotBucket = new Bucket(this, 'QuoteBucketBackup', {
-      blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
+
+    const quoteBotBucket = new s3.Bucket(this, 'QuoteBucketBackup', {
+      blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
     });
     new cdk.CfnOutput(this, 'S3Bucket', { value: quoteBotBucket.bucketName });
     quoteBotBucket.grantReadWrite(quoteBotRole);
 
-    const quoteBotTable = new Table(this, 'Quotes', {
+    const quoteBotTable = new ddb.Table(this, 'Quotes', {
       partitionKey: {
         name: 'quoteIndex',
-        type: AttributeType.NUMBER
+        type: ddb.AttributeType.NUMBER
       },
-      billingMode: BillingMode.PROVISIONED,
+      billingMode: ddb.BillingMode.PROVISIONED,
       readCapacity: 5,
       writeCapacity: 5,
     });
@@ -41,32 +56,47 @@ export class QuoteBotStack extends cdk.Stack {
       directory: '../app/',
     });
 
-    const cluster = new Cluster(this, 'QuoteBotCluster', {
+    const quoteBotVpc = new ec2.Vpc(this, 'QuoteBotVpc', {
+      maxAzs: 1,
+    });
+
+    const cluster = new ecs.Cluster(this, 'QuoteBotCluster', {
       capacity: {
-        instanceType: new InstanceType('t3.micro'),
+        instanceType: new ec2.InstanceType('t3.micro'),
         allowAllOutbound: true,
         associatePublicIpAddress: false,
         canContainersAccessInstanceRole: false,
-        desiredCapacity: 1,
-        machineImageType: MachineImageType.AMAZON_LINUX_2,
+        machineImageType: ecs.MachineImageType.AMAZON_LINUX_2,
         maxCapacity: 1,
         minCapacity: 1,
-      }
+      },
+      vpc: quoteBotVpc,
     });
 
-    const taskDefinition = new Ec2TaskDefinition(this, 'QuoteBotTaskDefinition', {
+    cluster.connections.allowToAnyIpv4(ec2.Port.allTcp());
+
+    const taskDefinition = new ecs.Ec2TaskDefinition(this, 'QuoteBotTaskDefinition', {
       taskRole: quoteBotRole,
+
     });
 
-    const containerImage = ContainerImage.fromEcrRepository(quoteBotImage.repository, quoteBotImage.imageUri.split(':').pop());
+    const containerImage = ecs.ContainerImage.fromEcrRepository(quoteBotImage.repository, quoteBotImage.imageUri.split(':').pop());
 
-    const containerDefinition = new ContainerDefinition(this, 'QuoteBotContainer', {
-      taskDefinition: taskDefinition,
+    taskDefinition.addContainer('QuoteBotContainer', {
       image: containerImage,
       memoryReservationMiB: 300,
       environment: {
-        ['qualifier']: '!'
-      }
+        ['QUALIFIER']: '!',
+        ['AWS_REGION']: this.region,
+      },
+      logging: ecs.LogDriver.awsLogs({
+        streamPrefix: 'quoteBot',
+      }),
+    });
+
+    const quoteBotService = new ecs.Ec2Service(this, 'QuoteBotService', {
+      cluster: cluster,
+      taskDefinition,
     });
   }
 }
