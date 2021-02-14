@@ -1,7 +1,6 @@
 import { Message, MessageReaction } from 'discord.js';
 import { MessageHandler } from './message-handler';
-import { QuoteManager } from '../quotes/quote-manager';
-import { QuoteBuilder } from '../quotes/quote-builder';
+import { QuoteBuilder, QuoteManager } from '../quotes';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../types';
 

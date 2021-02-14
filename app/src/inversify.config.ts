@@ -15,12 +15,14 @@ import { GetQuoteHandler } from './messages/get-quote-handler';
 import { QuoteItHandler } from './messages/quote-it-handler';
 import { CompoundMessageHandler } from './messages/compound-message-handler';
 import { QuoteBotMessageHandler } from './messages/quote-bot-message-handler';
-import { BasicQuoteFormatter } from './quotes/basic-quote-formatter';
-import { BlameQuoteFormatter } from './quotes/blame-quote-formatter';
-import { QuoteFormatter } from './quotes/quote-formatter';
-import { QuoteManager } from './quotes/quote-manager';
-import { InMemoryQuoteManager } from './quotes/in-memory-quote-manager';
-import { DdbQuoteManager } from './quotes/ddb-quote-manager';
+import {
+  QuoteManager,
+  InMemoryQuoteManager,
+  DdbQuoteManager,
+  QuoteFormatter,
+  BasicQuoteFormatter,
+  BlameQuoteFormatter,
+} from './quotes';
 
 const QUOTE_MAPPING_PATH = 'quoteMapping.json';
 
