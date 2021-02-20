@@ -56,15 +56,20 @@ export class QuoteBotStack extends cdk.Stack {
       directory: '../app/',
     });
 
-    const quoteBotVpc = new ec2.Vpc(this, 'QuoteBotVpc', {
+    const quoteBotVpc = new ec2.Vpc(this, 'QuoteBotVpcV2', {
       maxAzs: 1,
+      // while not best practice, we want this to remain as free as possible. As such, no NAT involved.
+      subnetConfiguration: [{
+        name: 'Public01',
+        subnetType: ec2.SubnetType.PUBLIC,
+      }],
     });
 
     const cluster = new ecs.Cluster(this, 'QuoteBotCluster', {
       capacity: {
         instanceType: new ec2.InstanceType('t3.micro'),
         allowAllOutbound: true,
-        associatePublicIpAddress: false,
+        associatePublicIpAddress: true,
         canContainersAccessInstanceRole: false,
         machineImageType: ecs.MachineImageType.AMAZON_LINUX_2,
         maxCapacity: 1,
@@ -77,7 +82,6 @@ export class QuoteBotStack extends cdk.Stack {
 
     const taskDefinition = new ecs.Ec2TaskDefinition(this, 'QuoteBotTaskDefinition', {
       taskRole: quoteBotRole,
-
     });
 
     const containerImage = ecs.ContainerImage.fromEcrRepository(quoteBotImage.repository, quoteBotImage.imageUri.split(':').pop());
@@ -95,7 +99,7 @@ export class QuoteBotStack extends cdk.Stack {
     });
 
     const quoteBotService = new ecs.Ec2Service(this, 'QuoteBotService', {
-      cluster: cluster,
+      cluster,
       taskDefinition,
     });
   }
