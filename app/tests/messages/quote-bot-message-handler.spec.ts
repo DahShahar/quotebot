@@ -3,7 +3,7 @@ import 'mocha';
 import { expect } from 'chai';
 import { EchoHandler } from '../../src/messages/echo-handler';
 import { QuoteBotMessageHandler } from '../../src/messages/quote-bot-message-handler';
-import { instance, mock, verify, when } from 'ts-mockito';
+import { anything, capture, instance, mock, verify, when } from 'ts-mockito';
 import { Message, User } from 'discord.js';
 
 describe('QuoteBotMessageHandler', () => {
@@ -52,7 +52,7 @@ describe('QuoteBotMessageHandler', () => {
   it('should pass it to the handler', async () => {
     await service.handleMessage(mockedMessageInstance);
 
-    verify(mockedEchoHandlerClass.handle(mockedMessageInstance)).once();
+    verify(mockedEchoHandlerClass.handle(anything(), mockedMessageInstance)).once();
   });
 
   it('should not pass it on', async () => {
@@ -68,7 +68,18 @@ describe('QuoteBotMessageHandler', () => {
         // Rejected promise is expected, so nothing happens here
       });
 
-    verify(mockedEchoHandlerClass.handle(mockedMessageInstance)).never();
+    verify(mockedEchoHandlerClass.handle(anything(), mockedMessageInstance)).never();
+  });
+
+  it('should pass only the correct content onwards', async () => {
+    mockedMessageInstance.content = `${qualifier}echo ${qualifier}`;
+
+    await service.handleMessage(mockedMessageInstance);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const [content, message] = capture(mockedEchoHandlerClass.handle).first();
+
+    expect(content).to.be.equal(qualifier);
+    expect(message.content).to.be.equal(mockedMessageInstance.content);
   });
 
   function setMessageContents() {

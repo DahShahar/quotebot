@@ -25,13 +25,13 @@ describe('QuoteItHandler', () => {
   });
 
   it('calls add on the quote manager', async () => {
-    await quoteItHandler.handle(testContext.quoteItMockedMessageInstance);
+    await quoteItHandler.handle('', testContext.quoteItMockedMessageInstance);
 
     verify(mockedQuoteManagerClass.add(anything())).once();
   });
 
   it('constructs a quote with expected fields', async () => {
-    await quoteItHandler.handle(testContext.quoteItMockedMessageInstance);
+    await quoteItHandler.handle('', testContext.quoteItMockedMessageInstance);
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const [quote] = capture(mockedQuoteManagerClass.add).first();

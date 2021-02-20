@@ -26,9 +26,7 @@ export class AddQuoteHandler implements MessageHandler {
    *
    * This would mean: author="this is the author" and quote="and this is the quote"
    */
-  handle(message: Message): Promise<Message | Message[] | MessageReaction> {
-    const content = message.content;
-
+  handle(content: string, message: Message): Promise<Message | Message[] | MessageReaction> {
     // the string should end with double quotes
     if (content.slice(-1) !== '"') {
       return this.failMessage(message);

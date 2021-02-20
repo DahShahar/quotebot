@@ -25,6 +25,8 @@ describe('BlameQuoteHandler', () => {
   let mockedQuoteManagerClass: QuoteManager;
   let mockedQuoteManagerInstance: QuoteManager;
 
+  let content: string;
+
   let testContext: TestContext;
 
   let blameQuoteHandler: BlameQuoteHandler;
@@ -46,15 +48,17 @@ describe('BlameQuoteHandler', () => {
   });
 
   it('calls get on the quote manager', async () => {
-    testContext.originalMockedMessageInstance.content = '3';
-    await blameQuoteHandler.handle(testContext.originalMockedMessageInstance);
+    testContext.originalMockedMessageInstance.content = '!blamequote 3';
+    content = '3';
+    await blameQuoteHandler.handle(content, testContext.originalMockedMessageInstance);
 
-    verify(mockedQuoteManagerClass.getByIndex(3)).once();
+    verify(mockedQuoteManagerClass.getByIndex(parseInt(content))).once();
   });
 
   it('formats the correct quote', async () => {
-    testContext.originalMockedMessageInstance.content = '3';
-    await blameQuoteHandler.handle(testContext.originalMockedMessageInstance);
+    testContext.originalMockedMessageInstance.content = '!blamequote 3';
+    content = '3';
+    await blameQuoteHandler.handle(content, testContext.originalMockedMessageInstance);
 
     verify(testContext.mockedChannelClass.send(embeddedQuote.blamer));
   });

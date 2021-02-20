@@ -14,6 +14,8 @@ describe('AddQuoteHandler', () => {
   let mockedQuoteManagerClass: QuoteManager;
   let mockedQuoteManagerInstance: QuoteManager;
 
+  let content: string;
+
   beforeEach(() => {
     mockedQuoteManagerClass = mock<QuoteManager>();
     when(mockedQuoteManagerClass.add(anything())).thenResolve(true);
@@ -21,19 +23,20 @@ describe('AddQuoteHandler', () => {
 
     testContext = new TestContext();
 
-    testContext.addQuoteMockedMessageInstance.content = 'shahar dahan "wrote this bot"';
+    content = 'shahar dahan "wrote this bot"';
+    testContext.addQuoteMockedMessageInstance.content = '!addquote shahar dahan "wrote this bot"';
 
     addQuoteHandler = new AddQuoteHandler(mockedQuoteManagerInstance);
   });
 
   it('calls add on the quote manager', async () => {
-    await addQuoteHandler.handle(testContext.addQuoteMockedMessageInstance);
+    await addQuoteHandler.handle(content, testContext.addQuoteMockedMessageInstance);
 
     verify(mockedQuoteManagerClass.add(anything())).once();
   });
 
   it('constructs a quote with expected fields on a proper message', async () => {
-    await addQuoteHandler.handle(testContext.addQuoteMockedMessageInstance);
+    await addQuoteHandler.handle(content, testContext.addQuoteMockedMessageInstance);
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const [quote] = capture(mockedQuoteManagerClass.add).first();
@@ -46,9 +49,9 @@ describe('AddQuoteHandler', () => {
   it('does not add bad quotes', async () => {
     const badQuotes = ['bad', '"hello"', 'author', 'author ""', 'author   ', '   "  "', 'a "b', 'a b"', '"  " test'];
     for (const badQuote of badQuotes) {
-      console.log(badQuote);
-      testContext.addQuoteMockedMessageInstance.content = badQuote;
-      await addQuoteHandler.handle(testContext.addQuoteMockedMessageInstance);
+      content = badQuote;
+      testContext.addQuoteMockedMessageInstance.content = `!addquote badQuote`;
+      await addQuoteHandler.handle(content, testContext.addQuoteMockedMessageInstance);
 
       verify(mockedQuoteManagerClass.add(anything())).never();
     }

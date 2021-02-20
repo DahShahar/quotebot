@@ -25,10 +25,9 @@ export class GetQuoteHandler implements MessageHandler {
     return `${this.getIdentifier()} [number?] [word?] : if you provide nothing, returns a random quote. If you provide a number, it'll provide the corresponding quote. If you provide a word, we'll search for the best quote that matches`;
   }
 
-  async handle(message: Message): Promise<Message | Message[] | MessageReaction> {
+  async handle(content: string, message: Message): Promise<Message | Message[] | MessageReaction> {
     let quote = undefined;
-    const content = message.content;
-    if (message.content.trim() === '') {
+    if (content.trim() === '') {
       quote = await this.quoteManager.get();
     } else if (this.checkInt(content)) {
       quote = await this.quoteManager.getByIndex(parseInt(content));

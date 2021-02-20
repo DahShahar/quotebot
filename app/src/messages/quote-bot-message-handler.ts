@@ -32,6 +32,9 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
     }
   }
 
+  /**
+   * Routes messages to the correct handler to handle them.
+   */
   handleMessage(message: Message): Promise<Message | Message[] | MessageReaction> {
     if (this.shouldIgnoreMessage(message)) {
       return Promise.reject();
@@ -41,9 +44,9 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
 
     // as part of checking if we should ignore this message,
     // we verified it started with the qualifier
-    message.content = message.content.substring(this.qualifier.length);
-    const [qualifier, restOfTheMessagePart] = message.content.split(/ (.*)/, 2);
-    let restOfTheMessage = restOfTheMessagePart;
+    const content = message.content.substring(this.qualifier.length);
+    const [qualifier, commandMessagePart] = content.split(/ (.*)/, 2);
+    let commandMessage = commandMessagePart;
 
     if (qualifier === 'usage' || qualifier === 'help') {
       return message.author.send(this.usage);
@@ -54,12 +57,11 @@ export class QuoteBotMessageHandler implements CompoundMessageHandler {
       return Promise.reject();
     }
 
-    if (restOfTheMessage === undefined) {
-      restOfTheMessage = '';
+    if (commandMessage === undefined) {
+      commandMessage = '';
     }
 
-    message.content = restOfTheMessage;
-    return handler.handle(message);
+    return handler.handle(commandMessage, message);
   }
 
   shouldIgnoreMessage(message: Message): boolean {

@@ -12,7 +12,7 @@ export class EchoHandler implements MessageHandler {
     return `${this.getIdentifier()} [words]: repeats [words] right back to you`;
   }
 
-  handle(message: Message): Promise<Message | Message[]> {
-    return message.reply(message.content);
+  handle(content: string, message: Message): Promise<Message | Message[]> {
+    return message.reply(content);
   }
 }

@@ -20,7 +20,7 @@ export class QuoteItHandler implements MessageHandler {
     return `${this.getIdentifier()} : Reply to a message with this command to add it as a quote`;
   }
 
-  handle(message: Message): Promise<Message | Message[] | MessageReaction> {
+  handle(content: string, message: Message): Promise<Message | Message[] | MessageReaction> {
     const repliedToReference = message.reference;
     if (repliedToReference === null || typeof repliedToReference === 'undefined') {
       return message.react('👎');
@@ -38,10 +38,14 @@ export class QuoteItHandler implements MessageHandler {
         .withBlamer(message.author.username)
         .build();
 
-      this.quoteManager.add(quote).catch((err) => {
-        console.error(err);
-      });
-      return message.react('👍');
+      return this.quoteManager
+        .add(quote)
+        .catch((err) => {
+          console.error(err);
+        })
+        .then(() => {
+          return message.react('👍');
+        });
     });
   }
 }

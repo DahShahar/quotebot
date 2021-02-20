@@ -4,7 +4,7 @@ import { anything, instance, mock, verify, when } from 'ts-mockito';
 
 import { resolvableInstance } from '../utils/resolvableInstance';
 import { TestContext } from '../utils/test-context';
-import { IndexedQuote, Quote, QuoteFormatter, QuoteManager } from '../../src/quotes';
+import { IndexedQuote, QuoteFormatter, QuoteManager } from '../../src/quotes';
 import { GetQuoteHandler } from '../../src/messages/get-quote-handler';
 
 describe('GetQuoteHandler', () => {
@@ -25,6 +25,8 @@ describe('GetQuoteHandler', () => {
 
   let mockedQuoteManagerClass: QuoteManager;
   let mockedQuoteManagerInstance: QuoteManager;
+
+  let content: string;
 
   let testContext: TestContext;
 
@@ -50,29 +52,29 @@ describe('GetQuoteHandler', () => {
   });
 
   it('calls get on the quote manager', async () => {
-    testContext.originalMockedMessageInstance.content = '';
-    await getQuoteHandler.handle(testContext.originalMockedMessageInstance);
+    content = '';
+    await getQuoteHandler.handle(content, testContext.originalMockedMessageInstance);
 
     verify(mockedQuoteManagerClass.get()).once();
   });
 
   it('responds with what it gets from the quote manager', async () => {
-    testContext.originalMockedMessageInstance.content = '';
-    await getQuoteHandler.handle(testContext.originalMockedMessageInstance);
+    content = '';
+    await getQuoteHandler.handle(content, testContext.originalMockedMessageInstance);
 
     verify(testContext.mockedChannelClass.send(quote.quote.quote)).once();
   });
 
   it('gets the correct quote when passed in a number', async () => {
-    testContext.originalMockedMessageInstance.content = '3';
-    await getQuoteHandler.handle(testContext.originalMockedMessageInstance);
+    content = '3';
+    await getQuoteHandler.handle(content, testContext.originalMockedMessageInstance);
 
     verify(testContext.mockedChannelClass.send(thirdQuote.quote.quote)).once();
   });
 
   it('gets the correct quote when passed in a string', async () => {
-    testContext.originalMockedMessageInstance.content = 'word';
-    await getQuoteHandler.handle(testContext.originalMockedMessageInstance);
+    content = 'word';
+    await getQuoteHandler.handle(content, testContext.originalMockedMessageInstance);
 
     verify(testContext.mockedChannelClass.send(wordQuote.quote.quote)).once();
   });

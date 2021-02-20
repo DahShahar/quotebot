@@ -21,7 +21,7 @@ describe('EchoHandler', () => {
   });
 
   it('should respond with with the same message', async () => {
-    await echoHandler.handle(mockedMessageInstance);
+    await echoHandler.handle(content, mockedMessageInstance);
 
     verify(mockedMessageClass.reply(content)).once();
   });
