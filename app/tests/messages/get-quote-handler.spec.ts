@@ -41,8 +41,12 @@ describe('GetQuoteHandler', () => {
     mockedQuoteManagerInstance = instance(mockedQuoteManagerClass);
 
     mockedQuoteFormatterClass = mock<QuoteFormatter>();
-    when(mockedQuoteFormatterClass.formatQuote(anything())).thenCall((arg1: IndexedQuote) => {
-      return arg1.quote.quote;
+    when(mockedQuoteFormatterClass.formatQuote(anything())).thenCall((arg1: IndexedQuote | IndexedQuote[]) => {
+      if (Array.isArray(arg1)) {
+        return arg1[0].quote.quote;
+      } else {
+        return arg1.quote.quote;
+      }
     });
     mockedQuoteFormatterInstance = instance(mockedQuoteFormatterClass);
 

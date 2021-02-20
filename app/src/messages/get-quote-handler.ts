@@ -1,6 +1,6 @@
 import { Message, MessageReaction } from 'discord.js';
 import { MessageHandler } from './message-handler';
-import { QuoteManager, QuoteFormatter } from '../quotes';
+import { IndexedQuote, QuoteManager, QuoteFormatter } from '../quotes';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../types';
 
@@ -26,7 +26,7 @@ export class GetQuoteHandler implements MessageHandler {
   }
 
   async handle(content: string, message: Message): Promise<Message | Message[] | MessageReaction> {
-    let quote = undefined;
+    let quote: IndexedQuote | IndexedQuote[] | undefined;
     if (content.trim() === '') {
       quote = await this.quoteManager.get();
     } else if (this.checkInt(content)) {
@@ -35,12 +35,7 @@ export class GetQuoteHandler implements MessageHandler {
 
     // try to match against the word
     if (quote === undefined) {
-      const quoteList = await this.quoteManager.getBySearch(content);
-      for (const entry of quoteList) {
-        if (quote === undefined) {
-          quote = entry;
-        }
-      }
+      quote = await this.quoteManager.getBySearch(content);
     }
 
     // still have nothing, oh well
