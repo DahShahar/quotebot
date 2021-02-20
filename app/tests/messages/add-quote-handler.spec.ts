@@ -21,7 +21,7 @@ describe('AddQuoteHandler', () => {
 
     testContext = new TestContext();
 
-    testContext.addQuoteMockedMessageInstance.content = testContext.originalMockedMessageInstance.content;
+    testContext.addQuoteMockedMessageInstance.content = 'shahar dahan "wrote this bot"';
 
     addQuoteHandler = new AddQuoteHandler(mockedQuoteManagerInstance);
   });
@@ -32,21 +32,25 @@ describe('AddQuoteHandler', () => {
     verify(mockedQuoteManagerClass.add(anything())).once();
   });
 
-  it('constructs a quote with expected fields', async () => {
+  it('constructs a quote with expected fields on a proper message', async () => {
     await addQuoteHandler.handle(testContext.addQuoteMockedMessageInstance);
 
     // eslint-disable-next-line @typescript-eslint/unbound-method
     const [quote] = capture(mockedQuoteManagerClass.add).first();
 
-    expect(quote.author).to.be.equal(testContext.authorUsername);
+    expect(quote.author).to.be.equal('shahar dahan');
     expect(quote.blamer).to.be.equal(testContext.blamerUsername);
-    expect(quote.quote).to.be.equal(testContext.originalMockedMessageInstance.content);
+    expect(quote.quote).to.be.equal('wrote this bot');
   });
 
-  it('does not match bad quotes', async () => {
-    testContext.addQuoteMockedMessageInstance.content = 'bad';
-    await addQuoteHandler.handle(testContext.addQuoteMockedMessageInstance);
+  it('does not add bad quotes', async () => {
+    const badQuotes = ['bad', '"hello"', 'author', 'author ""', 'author   ', '   "  "', 'a "b', 'a b"', '"  " test'];
+    for (const badQuote of badQuotes) {
+      console.log(badQuote);
+      testContext.addQuoteMockedMessageInstance.content = badQuote;
+      await addQuoteHandler.handle(testContext.addQuoteMockedMessageInstance);
 
-    verify(mockedQuoteManagerClass.add(anything())).never();
+      verify(mockedQuoteManagerClass.add(anything())).never();
+    }
   });
 });

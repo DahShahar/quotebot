@@ -17,34 +17,53 @@ export class AddQuoteHandler implements MessageHandler {
   }
 
   getUsage(): string {
-    return `${this.getIdentifier()} [quote]: adds [quote] from this channel. Must be verbatim. It looks back in the history to see who authored it. Will fail if can't find anything (it's too old, or there's a typo)`;
+    return `${this.getIdentifier()} [author] "quote": adds "quote" and attributes it to the author of your choice. Note that the quote must be in double quotes.`;
   }
 
+  /**
+   * The content of the message when it arrives at this point should look like
+   * this is the author "and this is the quote"
+   *
+   * This would mean: author="this is the author" and quote="and this is the quote"
+   */
   handle(message: Message): Promise<Message | Message[] | MessageReaction> {
-    const origContent = message.content;
-    return message.channel.messages.fetch().then(
-      (fetchedMessages): Promise<Message | MessageReaction> => {
-        const originalMessage: Message | undefined = fetchedMessages.find((m) => {
-          return m.id !== message.id && m.content === origContent;
-        });
+    const content = message.content;
 
-        if (originalMessage === undefined) {
-          return message
-            .react('👎')
-            .then(() => message.author.send("Couldn't find who or what you're trying to quote :("));
-        }
+    // the string should end with double quotes
+    if (content.slice(-1) !== '"') {
+      return this.failMessage(message);
+    }
 
-        const quote = new QuoteBuilder()
-          .withQuote(origContent)
-          .withBlamer(message.author.username)
-          .withAuthor(originalMessage.author.username)
-          .build();
+    const indexOfFirstQuote = content.indexOf('"');
+    if (indexOfFirstQuote === -1 || indexOfFirstQuote === content.length - 1) {
+      return this.failMessage(message);
+    }
 
-        this.quoteManager.add(quote).catch((err) => {
-          console.error(err);
-        });
-        return message.react('👍');
-      }
-    );
+    // we want everything inside the quote, but not the quotation marks
+    const quote = content.substring(indexOfFirstQuote + 1, content.length - 1).trim();
+    if (!quote) {
+      return this.failMessage(message);
+    }
+
+    const author = content.substring(0, indexOfFirstQuote).trim();
+    if (!author) {
+      return this.failMessage(message);
+    }
+
+    const toAddQuote = new QuoteBuilder()
+      .withQuote(quote)
+      .withBlamer(message.author.username)
+      .withAuthor(author)
+      .build();
+
+    this.quoteManager.add(toAddQuote).catch((err) => {
+      console.error(err);
+    });
+
+    return message.react('👍');
+  }
+
+  failMessage(message: Message): Promise<MessageReaction> {
+    return message.react('👎');
   }
 }

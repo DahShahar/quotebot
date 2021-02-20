@@ -35,7 +35,7 @@ function stringOrThrow(check: string | undefined, errorMessage: string): string 
 }
 
 function useInMemoryQuoteManager() {
-  return false;
+  return process.env.IN_MEMORY_MANAGER;
 }
 
 const container = new Container();
